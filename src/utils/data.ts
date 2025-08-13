@@ -1,11 +1,16 @@
 import { IoIosContrast } from "react-icons/io";
-import { FaBookReader } from "react-icons/fa";
+import { FaBookReader, FaRegFileAlt, FaListUl } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { RiVoiceprintFill } from "react-icons/ri";
 import { LuBookText } from "react-icons/lu";
 import { RiShieldCheckFill } from "react-icons/ri";
 import { RiGraduationCapFill } from "react-icons/ri";
 import { FaTrophy } from "react-icons/fa6";
+import { GrDocumentDownload } from "react-icons/gr";
+import { BsArchive } from "react-icons/bs";
+import { IoSettingsOutline, IoHelpCircleOutline } from "react-icons/io5";
+import { GoBell } from "react-icons/go";
+import { FiHome, FiBookmark } from "react-icons/fi";
 
 export const learners = [
   {
@@ -220,4 +225,27 @@ export const users = [
     image:
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
   },
+];
+
+export const menuItems = [
+  { icon: FiHome, label: "Home", href: "/dashboard" },
+  { icon: GrDocumentDownload, label: "Courses", href: "/courses" },
+  {
+    icon: FiBookmark,
+    label: "Saved Courses",
+    href: "/saved-courses",
+  },
+  { icon: FaRegFileAlt, label: "History", href: "/history" },
+  { icon: BsArchive, label: "Messages", href: "/messages" },
+  {
+    icon: FaListUl,
+    label: "Recent Activity",
+    href: "/recent-activity",
+  },
+];
+
+export const bottomMenuItems = [
+  { icon: IoSettingsOutline, label: "Settings", href: "/settings" },
+  { icon: GoBell, label: "Notification", href: "/notifications" },
+  { icon: IoHelpCircleOutline, label: "Help", href: "/help" },
 ];

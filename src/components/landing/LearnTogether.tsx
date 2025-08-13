@@ -7,9 +7,11 @@ import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 
 export function LearnTogether() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
 
   const cardWidth = 320;
+  const gapWidth = 32;
   const maxIndex = testimonials.length - 1;
 
   const scrollLeft = () => {
@@ -29,9 +31,19 @@ export function LearnTogether() {
   };
 
   const scrollToIndex = (index: number) => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = index * cardWidth;
-      scrollContainerRef.current.scrollTo({
+    const scrollAmount = index * (cardWidth + gapWidth);
+
+    // Scroll for desktop view
+    if (desktopScrollRef.current) {
+      desktopScrollRef.current.scrollTo({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
+    }
+
+    // Scroll for mobile view
+    if (mobileScrollRef.current) {
+      mobileScrollRef.current.scrollTo({
         left: scrollAmount,
         behavior: "smooth",
       });
@@ -50,16 +62,21 @@ export function LearnTogether() {
         </p>
       </div>
 
+      {/* Desktop Scrollable View */}
       <div className="hidden md:block relative mb-12">
-        <div className="grid md:grid-cols-2 grid-cols-3 xl:grid-cols-3 gap-6 lg:gap-8 px-20">
+        <div
+          ref={desktopScrollRef}
+          className="flex gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
           {testimonials.map((testimonial, index) => (
             <Card
               key={index}
               className={`${
                 index % 2 === 1 ? "bg-[#D6CEFF]" : "bg-[#FFF9E8]"
-              } border-0 shadow-sm hover:shadow-md transition-shadow`}
+              } border-0 shadow-sm hover:shadow-md transition-shadow flex-shrink-0 w-64 snap-center`}
             >
-              <CardContent className="space-y-10 flex flex-col justify-between">
+              <CardContent className="px-3 space-y-4">
                 <p className="text-gray-600 text-sm">
                   {testimonial.description}
                 </p>
@@ -72,7 +89,6 @@ export function LearnTogether() {
                     role="img"
                     aria-label="Hero Image"
                   />
-
                   <div className="flex flex-col">
                     <h6 className="text-[#001928] text-sm">
                       {testimonial.name}
@@ -86,12 +102,37 @@ export function LearnTogether() {
             </Card>
           ))}
         </div>
+
+        {/* Arrow Controls for Desktop */}
+        <button
+          onClick={scrollLeft}
+          disabled={currentIndex === 0}
+          className={`absolute top-1/2 -left-4 transform -translate-y-1/2 w-10 h-10 rounded-full bg-[#E6EEF7] hover:bg-[#7B61FF] text-black hover:text-white transition-all duration-300 flex items-center justify-center ${
+            currentIndex === 0
+              ? "opacity-50 cursor-not-allowed"
+              : "cursor-pointer"
+          }`}
+        >
+          <FaArrowLeftLong className="text-lg" />
+        </button>
+
+        <button
+          onClick={scrollRight}
+          disabled={currentIndex === maxIndex}
+          className={`absolute top-1/2 -right-4 transform -translate-y-1/2 w-10 h-10 rounded-full bg-[#E6EEF7] hover:bg-[#7B61FF] text-black hover:text-white transition-all duration-300 flex items-center justify-center ${
+            currentIndex === maxIndex
+              ? "opacity-50 cursor-not-allowed"
+              : "cursor-pointer"
+          }`}
+        >
+          <FaArrowRightLong className="text-lg" />
+        </button>
       </div>
 
       {/* Mobile Scrollable View */}
       <div className="md:hidden relative mb-12">
         <div
-          ref={scrollContainerRef}
+          ref={mobileScrollRef}
           className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
@@ -115,7 +156,6 @@ export function LearnTogether() {
                     role="img"
                     aria-label="Hero Image"
                   />
-
                   <div className="flex flex-col">
                     <h6 className="text-[#001928] text-sm">
                       {testimonial.name}

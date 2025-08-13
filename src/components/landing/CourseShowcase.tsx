@@ -24,24 +24,26 @@ export function CourseShowcase() {
           {courses.map((course, index) => (
             <Card
               key={index}
-              className={`overflow-hidden hover:shadow-lg transition-shadow p-0 ${
+              className={`overflow-hidden hover:shadow-lg transition-shadow p-2 w-75 ${
                 index % 2 === 1 ? "bg-[#7B61FF]" : "bg-[#34296B]"
               }`}
             >
-              <div className="aspect-video relative mx-3 mt-3">
+              <div className="aspect-video relative w-full h-52">
                 <Image
                   src={course.image}
                   alt={course.title}
-                  width={0}
-                  height={0}
                   fill
-                  className="object-cover rounded-lg"
+                  className="object-cover"
+                  style={{
+                    background:
+                      "radial-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5))",
+                  }}
                 />
                 <div className="absolute top-5 left-5 w-auto h-auto p-2 rounded-sm bg-[#F2EFFF]">
                   <course.icon className="text-2xl text-[#7B61FF]" />
                 </div>
               </div>
-              <CardContent className="p-6 space-y-2">
+              <CardContent className="space-y-2 pb-2">
                 <h3 className="font-bold text-xl text-white">{course.title}</h3>
                 <p className="text-white">{course.description}</p>
               </CardContent>

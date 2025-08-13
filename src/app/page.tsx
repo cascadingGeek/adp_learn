@@ -13,10 +13,18 @@ export default function HomePage() {
       <Header />
       <main>
         <HeroSection />
-        <AccessibilityFeatures />
-        <CourseShowcase />
-        <HowItWorks />
-        <LearnTogether />
+        <section id="features">
+          <AccessibilityFeatures />
+        </section>
+        <section id="courses">
+          <CourseShowcase />
+        </section>
+        <section id="how-it-works">
+          <HowItWorks />
+        </section>
+        <section id="community">
+          <LearnTogether />
+        </section>
         <InclusiveLearningHero />
       </main>
       <Footer />

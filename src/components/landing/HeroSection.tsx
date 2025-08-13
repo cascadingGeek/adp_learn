@@ -1,16 +1,18 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { learners } from "@/utils/data";
 
 export function HeroSection() {
+  const router = useRouter();
   return (
-    <section className="min-h-screen bg-[#F2EFFF] px-20">
+    <section className="min-h-screen bg-[#F2EFFF] px-10 xl:px-20">
       <div className="container mx-auto px-4 py-8">
         <div className="flex gap-10 items-center min-h-[90vh]">
           {/* Left Content */}
           <div className="space-y-8">
             <div className="space-y-10">
-              <h1 className="text-4xl md:text-6xl font-extrabold text-[#7B61FF]">
+              <h1 className="text-2xl xl:text-6xl font-extrabold text-[#7B61FF]">
                 Learn Skills Your Way <br />
                 <span className="text-[#34296B]">
                   Accessible, Inclusive, <br /> and Engaging
@@ -23,24 +25,22 @@ export function HeroSection() {
             </div>
 
             <div className="flex items-center gap-4">
-              <Link href="/signin">
-                <Button
-                  variant="default"
-                  size="lg"
-                  className="bg-[#7B61FF] text-white text-lg hover:bg-purple-700 rounded-full cursor-pointer font-normal"
-                >
-                  Start Learning
-                </Button>
-              </Link>
-              <Link href="/signin">
-                <Button
-                  variant="default"
-                  size="lg"
-                  className="bg-white border border-[#54656F] text-[#54656F] hover:text-white text-lg rounded-full cursor-pointer font-normal"
-                >
-                  Explore Courses
-                </Button>
-              </Link>
+              <Button
+                variant="default"
+                size="lg"
+                className="bg-[#7B61FF] text-white text-lg hover:bg-[#34296B] rounded-full cursor-pointer font-normal"
+                onClick={() => router.push("/signin")}
+              >
+                Start Learning
+              </Button>
+              <Button
+                variant="default"
+                size="lg"
+                className="bg-white hover:bg-[#34296B] border border-[#54656F] text-[#54656F] hover:text-white text-lg rounded-full cursor-pointer font-normal"
+                onClick={() => router.push("/signin")}
+              >
+                Explore Courses
+              </Button>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">

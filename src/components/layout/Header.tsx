@@ -4,16 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FiMenu, FiX } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
-  const navigation = [
-    { name: "About", href: "#about" },
-    { name: "Courses", href: "#courses" },
-    { name: "Features", href: "#features" },
-    { name: "How it Works", href: "#how-it-works" },
+  const navItems = [
+    { name: "Features", id: "features" },
+    { name: "Courses", id: "courses" },
+    { name: "How It Works", id: "how-it-works" },
+    { name: "Community", id: "community" },
   ];
+
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-[#F2EFFF] backdrop-blur-sm px-20">
@@ -25,15 +34,16 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <Link
+          <nav className="hidden md:flex items-center space-x-4">
+            {navItems.map((item) => (
+              <Button
+                variant="ghost"
                 key={item.name}
-                href={item.href}
-                className="text-[#000B11] text-base hover:text-purple-600 transition-colors"
+                onClick={() => scrollToSection(item.id)}
+                className="text-[#000B11] text-base hover:text-purple-600 transition-colors bg-transparent cursor-pointer"
               >
                 {item.name}
-              </Link>
+              </Button>
             ))}
           </nav>
 
@@ -41,15 +51,17 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-4">
             <Button
               variant="default"
-              className="border border-[#54656F] bg-white text-[#54656F] text-base rounded-full hover:text-white"
+              className="border border-[#54656F] bg-white hover:bg-[#34296B] text-[#54656F] text-base rounded-full hover:text-white"
               asChild
+              onClick={() => router.push("/signin")}
             >
               <Link href="/signin">Login</Link>
             </Button>
             <Button
               asChild
               variant="default"
-              className="border-none bg-[#7B61FF] text-white text-base rounded-full"
+              className="border-none bg-[#7B61FF] hover:bg-[#34296B] text-white text-base rounded-full"
+              onClick={() => router.push("/signup")}
             >
               <Link href="/signup">Sign up</Link>
             </Button>
@@ -66,31 +78,33 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t py-4 space-y-4">
-            {navigation.map((item) => (
-              <Link
+          <div className="lg:hidden border-t py-4 space-y-4">
+            {navItems.map((item) => (
+              <Button
+                variant="ghost"
                 key={item.name}
-                href={item.href}
-                className="block text-gray-600 hover:text-purple-600"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => scrollToSection(item.id)}
+                className="text-[#000B11] text-xs hover:text-purple-600 transition-colors bg-transparent"
               >
                 {item.name}
-              </Link>
+              </Button>
             ))}
             <div className="flex flex-col space-y-2 pt-4 border-t">
               <Button
                 variant="default"
-                className="border border-[#54656F] bg-white text-[#54656F] text-xs rounded-full hover:text-white"
+                className="border border-[#54656F] bg-white hover:bg-[#34296B] text-[#54656F] text-xs rounded-full hover:text-white"
                 asChild
+                onClick={() => router.push("/signin")}
               >
-                <Link href="/signin">Login</Link>
+                Login
               </Button>
               <Button
                 asChild
                 variant="default"
-                className="border-none bg-[#7B61FF] text-white text-xs rounded-full"
+                className="border-none bg-[#7B61FF] hover:bg-[#34296B] text-white text-xs rounded-full"
+                onClick={() => router.push("/signup")}
               >
-                <Link href="/signup">Sign up</Link>
+                Sign up
               </Button>
             </div>
           </div>

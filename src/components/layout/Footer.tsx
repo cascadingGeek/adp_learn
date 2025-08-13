@@ -66,9 +66,9 @@ export function Footer() {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-transparent border-none outline-0 text-white placeholder:text-gray-400 focus:border-none focus:ring-purple-400"
+                className="bg-transparent border-none outline-0 text-black placeholder:text-gray-400 focus:border-none focus:ring-0 focus:outline-0 rounded-full"
               />
-              <Button className="bg-[#FDC21D] hover:bg-[#FDC21D] text-[#000B11] font-normal px-2 py-2 text-xs rounded-full whitespace-nowrap absolute right-0 bottom-0">
+              <Button className="bg-[#FDC21D] hover:bg-[#000B11] text-[#000B11] hover:text-white font-normal px-2 py-2 text-xs rounded-full whitespace-nowrap absolute right-0 bottom-0 cursor-pointer">
                 Subscribe Now
               </Button>
             </div>

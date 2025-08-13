@@ -43,7 +43,7 @@ export function InclusiveLearningHero() {
 
               <Button
                 size="lg"
-                className="bg-[#FDC21D] hover:bg-[#FDC21D] text-[#000B11] font-normal px-8 py-6 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-[#FDC21D] hover:bg-[#000B11] text-[#000B11] hover:text-white font-normal px-8 py-6 text-lg rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
                 onClick={() => router.push("/signin")}
               >
                 Join now
