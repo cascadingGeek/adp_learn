@@ -1,26 +1,5 @@
 import { create } from "zustand";
-
-export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  lessons: number;
-  price: number;
-  currency: string;
-  image: string;
-  category: string;
-  instructor: string;
-  duration: string;
-  videos: CourseVideo[];
-}
-
-export interface CourseVideo {
-  id: string;
-  title: string;
-  duration: string;
-  isCompleted: boolean;
-  videoUrl: string;
-}
+import { Course } from "@/utils/types";
 
 interface AppState {
   courses: Course[];
@@ -38,7 +17,7 @@ interface AppState {
   setSidebarOpen: (open: boolean) => void;
 }
 
-export const useStore = create<AppState>((set, get) => ({
+export const useStore = create<AppState>((set) => ({
   courses: [
     {
       id: "1",

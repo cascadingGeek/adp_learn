@@ -7,16 +7,7 @@ import LessonModal from "@/components/course/LessonModal";
 import { FiSearch, FiFilter, FiGrid, FiList } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { CourseListView } from "@/components/course/CourseListView";
-
-const categories = [
-  "All Courses",
-  "Design",
-  "Development",
-  "Data Science",
-  "Communication",
-  "Business",
-  "Marketing",
-];
+import { categories } from "@/utils/data";
 
 export default function CoursesPage() {
   const { courses } = useStore();

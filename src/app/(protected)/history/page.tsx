@@ -1,33 +1,7 @@
 "use client";
 
 import { FiClock, FiPlay, FiCheckCircle } from "react-icons/fi";
-
-const historyData = [
-  {
-    id: "1",
-    courseTitle: "Intro to Web Developer",
-    lessonTitle: "HTML Fundamentals",
-    progress: 100,
-    lastAccessed: "2 hours ago",
-    duration: "25:30",
-  },
-  {
-    id: "2",
-    courseTitle: "Learn Data Analyst",
-    lessonTitle: "Introduction to Data Analysis",
-    progress: 75,
-    lastAccessed: "1 day ago",
-    duration: "20:30",
-  },
-  {
-    id: "3",
-    courseTitle: "Intro to Graphic Design",
-    lessonTitle: "Color Theory Basics",
-    progress: 50,
-    lastAccessed: "3 days ago",
-    duration: "22:45",
-  },
-];
+import { historyData } from "@/utils/data";
 
 export default function HistoryPage() {
   return (

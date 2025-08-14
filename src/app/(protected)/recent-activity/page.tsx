@@ -1,49 +1,6 @@
 "use client";
 
-import { FiPlay, FiBookmark, FiAward, FiUser } from "react-icons/fi";
-
-const activities = [
-  {
-    id: "1",
-    type: "course_completed",
-    title: 'Completed "HTML Fundamentals" lesson',
-    course: "Intro to Web Developer",
-    time: "2 hours ago",
-    icon: FiAward,
-    iconColor: "text-green-600",
-    iconBg: "bg-green-100",
-  },
-  {
-    id: "2",
-    type: "course_saved",
-    title: 'Saved "Digital Marketing" course',
-    course: "Digital Marketing",
-    time: "5 hours ago",
-    icon: FiBookmark,
-    iconColor: "text-blue-600",
-    iconBg: "bg-blue-100",
-  },
-  {
-    id: "3",
-    type: "lesson_started",
-    title: 'Started "Color Theory Basics" lesson',
-    course: "Intro to Graphic Design",
-    time: "1 day ago",
-    icon: FiPlay,
-    iconColor: "text-indigo-600",
-    iconBg: "bg-indigo-100",
-  },
-  {
-    id: "4",
-    type: "profile_updated",
-    title: "Updated profile information",
-    course: null,
-    time: "2 days ago",
-    icon: FiUser,
-    iconColor: "text-purple-600",
-    iconBg: "bg-purple-100",
-  },
-];
+import { activities } from "@/utils/data";
 
 export default function RecentActivityPage() {
   return (

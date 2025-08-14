@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FiPlay, FiClock, FiCheck, FiX } from "react-icons/fi";
+import { FiPlay, FiClock, FiCheck } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 
 export default function LessonModal() {

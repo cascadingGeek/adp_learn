@@ -1,36 +1,7 @@
 "use client";
 
 import { FiUser, FiSend } from "react-icons/fi";
-
-const messages = [
-  {
-    id: "1",
-    sender: "John Doe",
-    subject: "Course Completion Certificate",
-    preview:
-      "Congratulations! You have successfully completed the Web Development course...",
-    time: "2 hours ago",
-    isRead: false,
-  },
-  {
-    id: "2",
-    sender: "ADPLearn Support",
-    subject: "New Course Recommendation",
-    preview:
-      "Based on your learning history, we recommend checking out our Advanced JavaScript course...",
-    time: "1 day ago",
-    isRead: true,
-  },
-  {
-    id: "3",
-    sender: "Jane Smith",
-    subject: "Study Group Invitation",
-    preview:
-      "Hi! I noticed you're taking the Data Analysis course. Would you like to join our study group?",
-    time: "2 days ago",
-    isRead: true,
-  },
-];
+import { messages } from "@/utils/data";
 
 export default function MessagesPage() {
   return (

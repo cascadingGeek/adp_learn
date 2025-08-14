@@ -3,8 +3,9 @@ import { useStore } from "@/store/useStore";
 import Image from "next/image";
 import { FiBookmark } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
+import { Course } from "@/utils/types";
 
-export function CourseListView({ courses }: { courses: any[] }) {
+export function CourseListView({ courses }: { courses: Course[] }) {
   const { savedCourses, toggleSavedCourse, openLessonModal } = useStore();
 
   return (

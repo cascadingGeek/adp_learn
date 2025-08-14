@@ -10,7 +10,7 @@ import { GrDocumentDownload } from "react-icons/gr";
 import { BsArchive } from "react-icons/bs";
 import { IoSettingsOutline, IoHelpCircleOutline } from "react-icons/io5";
 import { GoBell } from "react-icons/go";
-import { FiHome, FiBookmark } from "react-icons/fi";
+import { FiHome, FiBookmark, FiPlay, FiAward, FiUser } from "react-icons/fi";
 
 export const learners = [
   {
@@ -248,4 +248,114 @@ export const bottomMenuItems = [
   { icon: IoSettingsOutline, label: "Settings", href: "/settings" },
   { icon: GoBell, label: "Notification", href: "/notifications" },
   { icon: IoHelpCircleOutline, label: "Help", href: "/help" },
+];
+
+export const categories = [
+  "All Courses",
+  "Design",
+  "Development",
+  "Data Science",
+  "Communication",
+  "Business",
+  "Marketing",
+];
+
+export const historyData = [
+  {
+    id: "1",
+    courseTitle: "Intro to Web Developer",
+    lessonTitle: "HTML Fundamentals",
+    progress: 100,
+    lastAccessed: "2 hours ago",
+    duration: "25:30",
+  },
+  {
+    id: "2",
+    courseTitle: "Learn Data Analyst",
+    lessonTitle: "Introduction to Data Analysis",
+    progress: 75,
+    lastAccessed: "1 day ago",
+    duration: "20:30",
+  },
+  {
+    id: "3",
+    courseTitle: "Intro to Graphic Design",
+    lessonTitle: "Color Theory Basics",
+    progress: 50,
+    lastAccessed: "3 days ago",
+    duration: "22:45",
+  },
+];
+
+export const messages = [
+  {
+    id: "1",
+    sender: "John Doe",
+    subject: "Course Completion Certificate",
+    preview:
+      "Congratulations! You have successfully completed the Web Development course...",
+    time: "2 hours ago",
+    isRead: false,
+  },
+  {
+    id: "2",
+    sender: "ADPLearn Support",
+    subject: "New Course Recommendation",
+    preview:
+      "Based on your learning history, we recommend checking out our Advanced JavaScript course...",
+    time: "1 day ago",
+    isRead: true,
+  },
+  {
+    id: "3",
+    sender: "Jane Smith",
+    subject: "Study Group Invitation",
+    preview:
+      "Hi! I noticed you're taking the Data Analysis course. Would you like to join our study group?",
+    time: "2 days ago",
+    isRead: true,
+  },
+];
+
+export const activities = [
+  {
+    id: "1",
+    type: "course_completed",
+    title: 'Completed "HTML Fundamentals" lesson',
+    course: "Intro to Web Developer",
+    time: "2 hours ago",
+    icon: FiAward,
+    iconColor: "text-green-600",
+    iconBg: "bg-green-100",
+  },
+  {
+    id: "2",
+    type: "course_saved",
+    title: 'Saved "Digital Marketing" course',
+    course: "Digital Marketing",
+    time: "5 hours ago",
+    icon: FiBookmark,
+    iconColor: "text-blue-600",
+    iconBg: "bg-blue-100",
+  },
+  {
+    id: "3",
+    type: "lesson_started",
+    title: 'Started "Color Theory Basics" lesson',
+    course: "Intro to Graphic Design",
+    time: "1 day ago",
+    icon: FiPlay,
+    iconColor: "text-indigo-600",
+    iconBg: "bg-indigo-100",
+  },
+  {
+    id: "4",
+    type: "profile_updated",
+    title: "Updated profile information",
+    course: null,
+    time: "2 days ago",
+    icon: FiUser,
+    iconColor: "text-purple-600",
+    iconBg: "bg-purple-100",
+  },
 ];

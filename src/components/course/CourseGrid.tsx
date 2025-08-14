@@ -1,6 +1,6 @@
 "use client";
 
-import { Course } from "@/store/useStore";
+import { Course } from "@/utils/types";
 import CourseCard from "./CourseCard";
 import { FiBookOpen } from "react-icons/fi";
 

@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Course } from "@/utils/types";
 
 export default function SavedCoursesPage() {
   const { courses, savedCourses, toggleSavedCourse } = useStore();
@@ -118,7 +119,7 @@ export default function SavedCoursesPage() {
   }
 
   // Helper Functions
-  function calculateTotalDuration(courses: any[]): string {
+  function calculateTotalDuration(courses: Course[]): string {
     const totalMinutes = courses.reduce((total, course) => {
       const duration = course.duration || "0 hours";
       const hours = parseFloat(duration.split(" ")[0]) || 0;
@@ -134,7 +135,7 @@ export default function SavedCoursesPage() {
     return `${Math.round(minutes)}m`;
   }
 
-  function getUniqueCategories(courses: any[]): string[] {
+  function getUniqueCategories(courses: Course[]): string[] {
     return [...new Set(courses.map((course) => course.category))];
   }
 

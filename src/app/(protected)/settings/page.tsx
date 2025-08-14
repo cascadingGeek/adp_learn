@@ -73,7 +73,7 @@ export default function SettingsPage() {
 
               <Button
                 variant="default"
-                className="bg-[#7B61FF] hover:bg-indigo-700 text-white"
+                className="bg-[#7B61FF] hover:bg-indigo-700 text-white cursor-pointer"
               >
                 Save Changes
               </Button>
@@ -147,24 +147,24 @@ export default function SettingsPage() {
             </h2>
 
             <div className="space-y-3">
-              <button className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg">
+              <Button className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg cursor-pointer">
                 <FiLock className="w-5 h-5 text-gray-600" />
                 <span className="text-sm font-medium text-gray-900">
                   Change Password
                 </span>
-              </button>
+              </Button>
 
-              <button className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg">
+              <Button className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg cursor-pointer">
                 <FiGlobe className="w-5 h-5 text-gray-600" />
                 <span className="text-sm font-medium text-gray-900">
                   Language & Region
                 </span>
-              </button>
+              </Button>
 
-              <button className="w-full flex items-center space-x-3 p-3 text-left hover:bg-red-50 rounded-lg text-red-600">
+              <Button className="w-full flex items-center space-x-3 p-3 text-left hover:bg-red-50 rounded-lg text-red-600 cursor-pointer">
                 <FiUser className="w-5 h-5" />
                 <span className="text-sm font-medium">Delete Account</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
