@@ -33,14 +33,14 @@ export function CourseListView({ courses }: { courses: any[] }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h3 className="text-base font-semibold text-gray-900 mb-2">
                       {course.title}
                     </h3>
-                    <p className="text-gray-600 mb-3 line-clamp-2">
+                    <p className="text-gray-600 mb-3 line-clamp-2 text-sm">
                       {course.description}
                     </p>
 
-                    <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <div className="flex items-center space-x-4 text-xs text-gray-500 mb-4">
                       <span>By {course.instructor}</span>
                       <span>•</span>
                       <button
@@ -60,27 +60,31 @@ export function CourseListView({ courses }: { courses: any[] }) {
 
                   {/* Actions */}
                   <div className="flex items-center space-x-3 ml-4">
-                    <button
+                    <Button
+                      variant="default"
                       onClick={() => toggleSavedCourse(course.id)}
-                      className={`p-2 rounded-full transition-colors ${
+                      className={`p-2 rounded-full transition-colors cursor-pointer ${
                         isSaved
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-[#7B61FF] text-white"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
-                      <FiBookmark className="w-4 h-4" />
-                    </button>
+                      <FiBookmark className="text-xl" />
+                    </Button>
                   </div>
                 </div>
 
                 {/* Price and Enroll */}
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-gray-900">
+                  <span className="text-lg font-bold text-gray-900">
                     {course.currency}
                     {course.price.toLocaleString()}
                   </span>
 
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  <Button
+                    variant="default"
+                    className="bg-[#7B61FF] hover:bg-indigo-700 text-white text-sm cursor-pointer"
+                  >
                     Enroll Now
                   </Button>
                 </div>

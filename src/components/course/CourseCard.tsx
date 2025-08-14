@@ -24,35 +24,37 @@ export default function CourseCard({ course }: CourseCardProps) {
           alt={course.title}
           className="w-full h-48 object-cover"
         />
-        <button
+        <Button
+          variant="default"
           onClick={() => toggleSavedCourse(course.id)}
-          className={`absolute top-3 right-3 p-2 rounded-full transition-colors ${
+          className={`absolute top-3 right-3 rounded-full transition-colors cursor-pointer ${
             isSaved
               ? "bg-indigo-600 text-white"
               : "bg-white text-gray-600 hover:bg-gray-50"
           }`}
         >
-          <FiBookmark className="w-4 h-4" />
-        </button>
+          <FiBookmark className="text-xl font-bold" />
+        </Button>
       </div>
 
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+        <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2">
           {course.title}
         </h3>
 
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+        <p className="text-[11px] text-[#54656F] mb-4 line-clamp-2">
           {course.description}
         </p>
 
         <div className="flex items-center justify-between mb-4">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => openLessonModal(course)}
-            className="flex items-center text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+            className="flex items-center text-sm text-indigo-600 hover:text-indigo-700 font-medium cursor-pointer"
           >
             <FiPlay className="w-4 h-4 mr-1" />
             {course.lessons} Lessons
-          </button>
+          </Button>
 
           <div className="flex items-center text-sm text-gray-500">
             <FiClock className="w-4 h-4 mr-1" />
@@ -66,7 +68,7 @@ export default function CourseCard({ course }: CourseCardProps) {
             {course.price.toLocaleString()}
           </span>
 
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm">
+          <Button className="bg-[#7B61FF] hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-light cursor-pointer">
             Get
           </Button>
         </div>

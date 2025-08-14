@@ -1,6 +1,6 @@
 "use client";
 
-import { FiMail, FiUser, FiSend } from "react-icons/fi";
+import { FiUser, FiSend } from "react-icons/fi";
 
 const messages = [
   {
@@ -37,22 +37,19 @@ export default function MessagesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-            Messages
-          </h1>
           <p className="text-gray-600">
             Stay connected with instructors and fellow learners
           </p>
         </div>
 
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center">
+        <button className="bg-[#7B61FF] hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center">
           <FiSend className="w-4 h-4 mr-2" />
           New Message
         </button>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200">
-        {messages.map((message, index) => (
+        {messages.map((message) => (
           <div
             key={message.id}
             className={`p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer ${
@@ -92,7 +89,7 @@ export default function MessagesPage() {
               </div>
 
               {!message.isRead && (
-                <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2"></div>
+                <div className="w-2 h-2 bg-[#7B61FF] rounded-full mt-2"></div>
               )}
             </div>
           </div>

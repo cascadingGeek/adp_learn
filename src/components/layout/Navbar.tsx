@@ -5,9 +5,23 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FiMenu } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store/useStore";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const { toggleSidebar } = useStore();
+  const pathname = usePathname();
+
+  const getRouteTitle = (path: string): string => {
+    const segments = path.split("/").filter(Boolean);
+    const currentRoute = segments[0] || "dashboard";
+
+    return currentRoute
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  const routeTitle = getRouteTitle(pathname);
 
   return (
     <header className="bg-white px-4 lg:px-6 py-4 shadow ">
@@ -22,7 +36,7 @@ export default function Navbar() {
           </Button>
 
           <h2 className="ml-4 lg:ml-0 text-2xl font-semibold text-[#101828]">
-            Dashboard
+            {routeTitle}
           </h2>
         </div>
 

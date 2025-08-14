@@ -22,7 +22,7 @@ export default function LessonModal() {
 
   return (
     <Dialog open={isLessonModalOpen} onOpenChange={closeLessonModal}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden bg-white">
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -44,16 +44,16 @@ export default function LessonModal() {
                 </span>
               </div>
             </div>
-            <button
+            {/* <button
               onClick={closeLessonModal}
               className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
             >
               <FiX className="w-5 h-5" />
-            </button>
+            </button> */}
           </div>
         </DialogHeader>
 
-        <div className="mt-6">
+        <div className="my-6">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Course Content

@@ -103,12 +103,14 @@ export default function SavedCoursesPage() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/courses">
-            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Button className="bg-[#7B61FF] hover:bg-indigo-700 text-white cursor-pointer">
               Browse All Courses
             </Button>
           </Link>
-          <Link href="/">
-            <Button variant="outline">Back to Dashboard</Button>
+          <Link href="/dashboard">
+            <Button variant="outline" className="cursor-pointer">
+              Back to Dashboard
+            </Button>
           </Link>
         </div>
       </div>
@@ -164,7 +166,10 @@ export default function SavedCoursesPage() {
           {savedCourses.length > 0 && (
             <div className="flex flex-col sm:flex-row gap-3">
               <Link href="/courses">
-                <Button variant="outline" className="flex items-center">
+                <Button
+                  variant="outline"
+                  className="flex items-center cursor-pointer"
+                >
                   <FiExternalLink className="w-4 h-4 mr-2" />
                   Browse More
                 </Button>
@@ -172,7 +177,7 @@ export default function SavedCoursesPage() {
               <Button
                 variant="outline"
                 onClick={handleRemoveAll}
-                className="flex items-center text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="flex items-center text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
               >
                 <FiTrash2 className="w-4 h-4 mr-2" />
                 Clear All
@@ -250,7 +255,11 @@ export default function SavedCoursesPage() {
           <p className="text-gray-600 mb-4">
             Try adjusting your search terms to find your saved courses.
           </p>
-          <Button onClick={() => setSearchTerm("")} variant="outline">
+          <Button
+            onClick={() => setSearchTerm("")}
+            variant="outline"
+            className="cursor-pointer"
+          >
             Clear Search
           </Button>
         </div>

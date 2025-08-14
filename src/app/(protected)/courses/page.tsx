@@ -39,14 +39,13 @@ export default function CoursesPage() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg p-6 text-center">
-        <h2 className="text-xl font-semibold mb-2">
-          Courses to get you started. Explore courses from experienced,
-          real-world experts.
+      <div className="bg-[#7B61FF] text-white rounded-lg p-3 text-center">
+        <h2 className="text-sm font-medium mb-2">
+          Courses to get you started.{" "}
+          <span className="font-light">
+            Explore courses from experienced, real-world experts.
+          </span>
         </h2>
-        <p className="text-indigo-100">
-          Discover new skills with our comprehensive learning platform
-        </p>
       </div>
 
       {/* Search and Filter Section */}

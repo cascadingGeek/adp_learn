@@ -49,9 +49,6 @@ export default function RecentActivityPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-          Recent Activity
-        </h1>
         <p className="text-gray-600">
           Keep track of your learning journey and achievements
         </p>

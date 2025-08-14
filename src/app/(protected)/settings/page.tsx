@@ -7,9 +7,6 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-          Settings
-        </h1>
         <p className="text-gray-600">
           Manage your account settings and preferences
         </p>
@@ -74,7 +71,10 @@ export default function SettingsPage() {
                 />
               </div>
 
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
+              <Button
+                variant="default"
+                className="bg-[#7B61FF] hover:bg-indigo-700 text-white"
+              >
                 Save Changes
               </Button>
             </div>
