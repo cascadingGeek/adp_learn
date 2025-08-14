@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Course } from "@/store/useStore";
+import { Course } from "@/utils/types";
 import { useStore } from "@/store/useStore";
 import { FiClock, FiBookmark, FiPlay } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
