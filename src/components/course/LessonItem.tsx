@@ -1,5 +1,5 @@
 "use client";
-import { FiFileText, FiVolume2 } from "react-icons/fi";
+import { FiFileText } from "react-icons/fi";
 import { FaPlay } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { MdAudioFile } from "react-icons/md";

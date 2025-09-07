@@ -8,8 +8,6 @@ import { useOnboardingStore } from "@/store/useOnboardingStore";
 import {
   ChevronLeft,
   ChevronRight,
-  Beaker,
-  Target,
   Monitor,
   Laptop,
   Briefcase,

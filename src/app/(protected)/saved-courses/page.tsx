@@ -6,7 +6,7 @@ import CourseGrid from "@/components/course/CourseGrid";
 import { FiBookmark, FiSearch, FiPlay, FiUser } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Course } from "@/utils/types";
+// import { Course } from "@/utils/types";
 import {
   Select,
   SelectContent,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 
 export default function SavedCoursesPage() {
-  const { courses, savedCourses, toggleSavedCourse } = useStore();
+  const { courses, savedCourses } = useStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"title" | "category" | "recent">(
     "recent"
@@ -118,25 +118,25 @@ export default function SavedCoursesPage() {
   }
 
   // Helper Functions
-  function calculateTotalDuration(courses: Course[]): string {
-    const totalMinutes = courses.reduce((total, course) => {
-      const duration = course.duration || "0 hours";
-      const hours = parseFloat(duration.split(" ")[0]) || 0;
-      return total + hours * 60;
-    }, 0);
+  // function calculateTotalDuration(courses: Course[]): string {
+  //   const totalMinutes = courses.reduce((total, course) => {
+  //     const duration = course.duration || "0 hours";
+  //     const hours = parseFloat(duration.split(" ")[0]) || 0;
+  //     return total + hours * 60;
+  //   }, 0);
 
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
+  //   const hours = Math.floor(totalMinutes / 60);
+  //   const minutes = totalMinutes % 60;
 
-    if (hours > 0) {
-      return `${hours}h ${minutes > 0 ? `${Math.round(minutes)}m` : ""}`;
-    }
-    return `${Math.round(minutes)}m`;
-  }
+  //   if (hours > 0) {
+  //     return `${hours}h ${minutes > 0 ? `${Math.round(minutes)}m` : ""}`;
+  //   }
+  //   return `${Math.round(minutes)}m`;
+  // }
 
-  function getUniqueCategories(courses: Course[]): string[] {
-    return [...new Set(courses.map((course) => course.category))];
-  }
+  // function getUniqueCategories(courses: Course[]): string[] {
+  //   return [...new Set(courses.map((course) => course.category))];
+  // }
 
   return (
     <div className="space-y-6">

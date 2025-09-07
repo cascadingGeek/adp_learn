@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useStore } from "@/store/useStore";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FiPlay, FiPause, FiX } from "react-icons/fi";
+import { FiPlay, FiPause } from "react-icons/fi";
 
 export const LessonModal = () => {
   const {
