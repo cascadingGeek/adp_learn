@@ -1,17 +1,19 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import OnboardingWizard from "@/components/OnboardingWizard";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { HeroSection } from "@/components/landing/HeroSection";
 
 export default function DashboardPage() {
   const { updatePreferences } = useOnboardingStore();
-  const hasCompletedOnboarding = localStorage.getItem("onboarding-completed");
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   useEffect(() => {
+    const onboardingStatus = localStorage.getItem("onboarding-completed");
+    setHasCompletedOnboarding(!!onboardingStatus);
+
     const getStudentId = async () => {
       const studentId = "user@example.com";
-
       updatePreferences({ studentId });
     };
 
@@ -21,7 +23,6 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen">
       {hasCompletedOnboarding && <OnboardingWizard />}
-
       <HeroSection />
     </div>
   );
