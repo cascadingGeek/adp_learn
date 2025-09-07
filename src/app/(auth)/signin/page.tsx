@@ -1,31 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FcGoogle } from "react-icons/fc";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
 
 type AuthView = "initial" | "form";
 
 const SignInPage = () => {
   const router = useRouter();
   const [currentView, setCurrentView] = useState<AuthView>("initial");
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const {
+    signIn,
+    googleAuth,
+    isLoading,
+    error,
+    clearError,
+    isAuthenticated,
+    user,
+  } = useAuthStore();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Check if user has completed onboarding
+      const hasCompletedOnboarding = localStorage.getItem(
+        "onboarding-completed"
+      );
+      if (hasCompletedOnboarding) {
+        router.push("/dashboard");
+      } else {
+        router.push("/onboarding");
+      }
+    }
+  }, [isAuthenticated, user, router]);
+
+  // Clear error when component mounts or view changes
+  useEffect(() => {
+    clearError();
+  }, [currentView, clearError]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sign in:", formData);
-    router.push("/dashboard");
+
+    if (!formData.email || !formData.password) {
+      return;
+    }
+
+    const success = await signIn(formData.email, formData.password);
+
+    if (success) {
+      // Navigation will be handled by the useEffect above
+      console.log("Sign in successful");
+    }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log("Google sign in");
-    router.push("/dashboard");
+  const handleGoogleSignIn = async () => {
+    const success = await googleAuth();
+
+    if (success) {
+      console.log("Google sign in successful");
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear error when user starts typing
+    if (error) {
+      clearError();
+    }
   };
 
   const renderInitialView = () => (
@@ -53,21 +108,31 @@ const SignInPage = () => {
             </p>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
           <div className="space-y-4">
             <Button
               type="button"
               variant="outline"
               className="w-full h-12 border-none outline-0 bg-[#E2E5E8] rounded-full cursor-pointer flex items-center justify-center gap-2"
               onClick={handleGoogleSignIn}
+              disabled={isLoading}
             >
               <FcGoogle className="text-xl" />
-              Sign in with Google
+              {isLoading ? "Signing in..." : "Sign in with Google"}
             </Button>
 
             <Button
               type="button"
               className="w-full h-12 border-none outline-0 bg-[#7B61FF] rounded-full cursor-pointer flex items-center justify-center gap-2 text-white"
               onClick={() => setCurrentView("form")}
+              disabled={isLoading}
             >
               Sign in with email
             </Button>
@@ -123,6 +188,14 @@ const SignInPage = () => {
             </h1>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
@@ -131,12 +204,12 @@ const SignInPage = () => {
                 </label>
                 <Input
                   type="email"
+                  name="email"
                   placeholder="Enter your email"
                   className="p-2 rounded-full"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={handleInputChange}
+                  disabled={isLoading}
                   required
                 />
               </div>
@@ -145,16 +218,29 @@ const SignInPage = () => {
                 <label className="block text-sm font-medium text-[#22272F] mb-2">
                   Password
                 </label>
-                <Input
-                  type="password"
-                  placeholder="Enter password"
-                  className="p-2 rounded-full"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter password"
+                    className="p-2 rounded-full pr-10"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="text-right">
@@ -170,8 +256,9 @@ const SignInPage = () => {
             <Button
               type="submit"
               className="w-full h-12 bg-[#7B61FF] hover:bg-[#7B61FF] cursor-pointer flex items-center justify-center gap-2 text-white rounded-full"
+              disabled={isLoading || !formData.email || !formData.password}
             >
-              Sign in
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 

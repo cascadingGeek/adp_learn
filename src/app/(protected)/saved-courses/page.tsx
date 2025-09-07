@@ -3,18 +3,17 @@
 import { useState } from "react";
 import { useStore } from "@/store/useStore";
 import CourseGrid from "@/components/course/CourseGrid";
-import LessonModal from "@/components/course/LessonModal";
-import {
-  FiBookmark,
-  FiSearch,
-  FiTrash2,
-  FiExternalLink,
-  FiPlay,
-  FiUser,
-} from "react-icons/fi";
+import { FiBookmark, FiSearch, FiPlay, FiUser } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Course } from "@/utils/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SavedCoursesPage() {
   const { courses, savedCourses, toggleSavedCourse } = useStore();
@@ -44,13 +43,13 @@ export default function SavedCoursesPage() {
     }
   });
 
-  const handleRemoveAll = () => {
-    if (window.confirm("Are you sure you want to remove all saved courses?")) {
-      savedCourses.forEach((courseId) => {
-        toggleSavedCourse(courseId);
-      });
-    }
-  };
+  // const handleRemoveAll = () => {
+  //   if (window.confirm("Are you sure you want to remove all saved courses?")) {
+  //     savedCourses.forEach((courseId) => {
+  //       toggleSavedCourse(courseId);
+  //     });
+  //   }
+  // };
 
   // Empty State Component
   function EmptySavedCoursesState() {
@@ -141,83 +140,40 @@ export default function SavedCoursesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6 border border-indigo-100">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-              <FiBookmark className="inline-block w-8 h-8 mr-3 text-indigo-600" />
-              Saved Courses
-            </h1>
-            <p className="text-gray-600 mb-4">
-              Your bookmarked courses for easy access and future learning
-            </p>
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <span className="flex items-center">
-                <span className="w-2 h-2 bg-indigo-600 rounded-full mr-2"></span>
-                {savedCourses.length} courses saved
-              </span>
-              <span className="flex items-center">
-                <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                Ready to learn
-              </span>
-            </div>
-          </div>
-
-          {savedCourses.length > 0 && (
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/courses">
-                <Button
-                  variant="outline"
-                  className="flex items-center cursor-pointer"
-                >
-                  <FiExternalLink className="w-4 h-4 mr-2" />
-                  Browse More
-                </Button>
-              </Link>
-              <Button
-                variant="outline"
-                onClick={handleRemoveAll}
-                className="flex items-center text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
-              >
-                <FiTrash2 className="w-4 h-4 mr-2" />
-                Clear All
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Search and Sort Section */}
       {savedCourses.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="w-full h-auto">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-end">
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-md">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <div className="flex flex-1 justify-between items-center max-w-md p-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
               <input
                 type="text"
                 placeholder="Search saved courses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full border-0 outline-0"
               />
+              <FiSearch className="text-gray-400 text-lg" />
             </div>
 
             {/* Sort Options */}
             <div className="flex items-center space-x-3">
               <span className="text-sm text-gray-600">Sort by:</span>
-              <select
+              <Select
                 value={sortBy}
-                onChange={(e) =>
-                  setSortBy(e.target.value as "title" | "category" | "recent")
+                onValueChange={(value) =>
+                  setSortBy(value as "title" | "category" | "recent")
                 }
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               >
-                <option value="recent">Recently Added</option>
-                <option value="title">Title A-Z</option>
-                <option value="category">Category</option>
-              </select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort data" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">Recently Added</SelectItem>
+                  <SelectItem value="title">Title A-Z</SelectItem>
+                  <SelectItem value="category">Category</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -231,12 +187,6 @@ export default function SavedCoursesPage() {
               {sortedCourses.length}
             </span>
             {searchTerm ? " courses found" : " saved courses"}
-          </div>
-
-          {/* Quick Stats */}
-          <div className="hidden sm:flex items-center space-x-6 text-sm text-gray-500">
-            <span>Total Duration: {calculateTotalDuration(sortedCourses)}</span>
-            <span>Categories: {getUniqueCategories(sortedCourses).length}</span>
           </div>
         </div>
       )}
@@ -268,37 +218,6 @@ export default function SavedCoursesPage() {
         // Empty saved courses state
         <EmptySavedCoursesState />
       )}
-
-      {/* Course Categories Summary */}
-      {sortedCourses.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Your Learning Interests
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            {getUniqueCategories(sortedCourses).map((category) => {
-              const count = sortedCourses.filter(
-                (course) => course.category === category
-              ).length;
-              return (
-                <div
-                  key={category}
-                  className="flex items-center bg-gray-50 px-3 py-2 rounded-lg"
-                >
-                  <span className="text-sm font-medium text-gray-700">
-                    {category}
-                  </span>
-                  <span className="ml-2 text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">
-                    {count}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      <LessonModal />
     </div>
   );
 }

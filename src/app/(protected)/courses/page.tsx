@@ -3,137 +3,238 @@
 import { useState } from "react";
 import { useStore } from "@/store/useStore";
 import CourseGrid from "@/components/course/CourseGrid";
-import LessonModal from "@/components/course/LessonModal";
-import { FiSearch, FiFilter, FiGrid, FiList } from "react-icons/fi";
+import { FiSearch, FiGrid, FiList } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { CourseListView } from "@/components/course/CourseListView";
-import { categories } from "@/utils/data";
+import { IoSettingsOutline } from "react-icons/io5";
+import { IoFilter } from "react-icons/io5";
+import FilterDialog, { FilterState } from "@/components/course/FilterDialog";
 
 export default function CoursesPage() {
   const { courses } = useStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Courses");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Filter courses based on search and category
-  const filteredCourses = courses.filter((course) => {
-    const matchesSearch =
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All Courses" ||
-      course.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
+  // Filter state
+  const [filters, setFilters] = useState<FilterState>({
+    skillLevel: [],
+    skillArea: [],
+    contentPreference: [],
+    learningStyle: [],
+    peerReview: [],
   });
+
+  // Apply filters to courses
+  const applyFilters = (courses: any[]) => {
+    return courses.filter((course) => {
+      // Apply skill level filter
+      if (filters.skillLevel.length > 0) {
+        const hasSkillLevel = filters.skillLevel.some(
+          (level) => course.skillLevel?.toLowerCase() === level.toLowerCase()
+        );
+        if (!hasSkillLevel) return false;
+      }
+
+      // Apply skill area filter
+      if (filters.skillArea.length > 0) {
+        const hasSkillArea = filters.skillArea.some(
+          (area) =>
+            course.category?.toLowerCase() === area.toLowerCase() ||
+            course.skillArea?.toLowerCase() === area.toLowerCase()
+        );
+        if (!hasSkillArea) return false;
+      }
+
+      // Apply content preference filter
+      if (filters.contentPreference.length > 0) {
+        const hasContentType = filters.contentPreference.some(
+          (type) => course.contentType?.toLowerCase() === type.toLowerCase()
+        );
+        if (!hasContentType) return false;
+      }
+
+      // Apply learning style filter
+      if (filters.learningStyle.length > 0) {
+        const hasLearningStyle = filters.learningStyle.some(
+          (style) => course.learningStyle?.toLowerCase() === style.toLowerCase()
+        );
+        if (!hasLearningStyle) return false;
+      }
+
+      return true;
+    });
+  };
+
+  // Filter courses based on search, category, and advanced filters
+  const filteredCourses = applyFilters(
+    courses.filter((course) => {
+      const matchesSearch =
+        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "All Courses" ||
+        course.category === selectedCategory;
+
+      return matchesSearch && matchesCategory;
+    })
+  );
+
+  // Check if any filters are active
+  const hasActiveFilters = Object.values(filters).some(
+    (filterArray) => filterArray.length > 0
+  );
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      skillLevel: [],
+      skillArea: [],
+      contentPreference: [],
+      learningStyle: [],
+      peerReview: [],
+    });
+    setSearchTerm("");
+    setSelectedCategory("All Courses");
+  };
 
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-[#7B61FF] text-white rounded-lg p-3 text-center">
-        <h2 className="text-sm font-medium mb-2">
-          Courses to get you started.{" "}
-          <span className="font-light">
-            Explore courses from experienced, real-world experts.
-          </span>
+      <div className="bg-[#7B61FF] text-white rounded-lg p-3 text-center flex items-center justify-center gap-2">
+        <IoSettingsOutline className="text-white text-lg font-bold" />
+        <h2 className="text-sm font-normal">
+          Adjust your preferences and accessibility tools to get course
+          suggestions that fit your goals and needs.{" "}
         </h2>
+        <FilterDialog
+          isOpen={isFilterOpen}
+          onOpenChange={setIsFilterOpen}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          trigger={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="font-bold cursor-pointer p-0 text-white hover:text-white hover:bg-transparent"
+            >
+              Customize Now
+            </Button>
+          }
+        />
       </div>
 
       {/* Search and Filter Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+      <div className="w-full h-auto">
+        <div className="flex flex-col lg:flex-row gap-4 items-center justify-end">
           {/* Search Bar */}
-          <div className="relative flex-1 max-w-md">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="flex flex-1 justify-between items-center max-w-md p-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
             <input
               type="text"
-              placeholder="Search courses..."
+              placeholder="Search courses"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full border-0 outline-0"
             />
+            <FiSearch className="text-gray-400 text-lg" />
           </div>
 
-          {/* Category Filter */}
-          <div className="flex items-center space-x-4">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-white text-indigo-600 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
+          {/* Filter Dialog */}
+          <FilterDialog
+            isOpen={isFilterOpen}
+            onOpenChange={setIsFilterOpen}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            trigger={
+              <Button
+                variant="outline"
+                size="sm"
+                className={`flex items-center gap-2 px-2 py-1 text-sm font-normal cursor-pointer border-[#777F89] text-[#777F89] ${
+                  hasActiveFilters
+                    ? "bg-indigo-50 border-indigo-300 text-indigo-600"
+                    : ""
                 }`}
               >
-                <FiGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode === "list"
-                    ? "bg-white text-indigo-600 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                <FiList className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
+                Filter
+                <IoFilter className="text-lg" />
+                {hasActiveFilters && (
+                  <span className="bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {Object.values(filters).reduce(
+                      (total, filterArray) => total + filterArray.length,
+                      0
+                    )}
+                  </span>
+                )}
+              </Button>
+            }
+          />
 
-        {/* Quick Filter Buttons */}
-        <div className="flex flex-wrap gap-2 mt-4">
-          {categories.slice(1).map((category) => (
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
             <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                selectedCategory === category
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "grid"
+                  ? "bg-white text-indigo-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              {category}
+              <FiGrid className="w-4 h-4" />
             </button>
-          ))}
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "list"
+                  ? "bg-white text-indigo-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <FiList className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Results Summary */}
-      <div className="flex items-center justify-between">
-        <div className="text-gray-600">
-          <span className="font-medium text-gray-900">
-            {filteredCourses.length}
-          </span>{" "}
-          courses found
-          {selectedCategory !== "All Courses" && (
-            <span className="ml-2">
-              in{" "}
-              <span className="font-medium text-indigo-600">
-                {selectedCategory}
+      {/* Active Filters Display */}
+      {hasActiveFilters && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm text-gray-600">Active filters:</span>
+          {Object.entries(filters).map(([category, values]) =>
+            values.map((value) => (
+              <span
+                key={`${category}-${value}`}
+                className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-full"
+              >
+                {value}
+                <button
+                  onClick={() => {
+                    const newFilters = { ...filters };
+                    newFilters[category as keyof FilterState] = newFilters[
+                      category as keyof FilterState
+                    ].filter((v) => v !== value);
+                    setFilters(newFilters);
+                  }}
+                  className="text-indigo-500 hover:text-indigo-700"
+                >
+                  ×
+                </button>
               </span>
-            </span>
+            ))
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearAllFilters}
+            className="text-sm text-gray-500 hover:text-gray-700"
+          >
+            Clear all
+          </Button>
         </div>
-
-        <Button variant="outline" className="flex items-center space-x-2">
-          <FiFilter className="w-4 h-4" />
-          <span>More Filters</span>
-        </Button>
-      </div>
+      )}
 
       {/* Course Grid/List */}
       {viewMode === "grid" ? (
@@ -155,19 +256,11 @@ export default function CoursesPage() {
             Try adjusting your search terms or filters to find what you&apos;re
             looking for.
           </p>
-          <Button
-            onClick={() => {
-              setSearchTerm("");
-              setSelectedCategory("All Courses");
-            }}
-            variant="outline"
-          >
-            Clear Filters
+          <Button onClick={clearAllFilters} variant="outline">
+            Clear All Filters
           </Button>
         </div>
       )}
-
-      <LessonModal />
     </div>
   );
 }

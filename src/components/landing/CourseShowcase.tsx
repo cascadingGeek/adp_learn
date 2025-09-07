@@ -39,9 +39,9 @@ export function CourseShowcase() {
                       "radial-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5))",
                   }}
                 />
-                <div className="absolute top-5 left-5 w-auto h-auto p-2 rounded-sm bg-[#F2EFFF]">
+                {/* <div className="absolute top-5 left-5 w-auto h-auto p-2 rounded-sm bg-[#F2EFFF]">
                   <course.icon className="text-2xl text-[#7B61FF]" />
-                </div>
+                </div> */}
               </div>
               <CardContent className="space-y-2 pb-2">
                 <h3 className="font-bold text-xl text-white">{course.title}</h3>

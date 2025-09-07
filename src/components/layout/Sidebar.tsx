@@ -8,11 +8,18 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { FiX } from "react-icons/fi";
 import { menuItems, bottomMenuItems } from "@/utils/data";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { isSidebarOpen, setSidebarOpen } = useStore();
+  const { signOut } = useAuthStore();
+
+  const handleSignOut = () => {
+    signOut();
+    router.push("/signin");
+  };
 
   return (
     <>
@@ -165,7 +172,7 @@ export default function Sidebar() {
               <Button
                 variant="ghost"
                 className="flex items-center justify-start gap-5 w-full px-3 py-2 text-sm font-medium text-gray-600 rounded-lg hover:text-gray-900 bg-transparent hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={() => router.push("/")}
+                onClick={handleSignOut}
               >
                 <FaArrowLeftLong className="text-lg" />
                 Log Out

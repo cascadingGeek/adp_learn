@@ -1,114 +1,241 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import { useStore } from "@/store/useStore";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { FiPlay, FiClock, FiCheck } from "react-icons/fi";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { FiPlay, FiPause, FiX } from "react-icons/fi";
 
-export default function LessonModal() {
-  const { isLessonModalOpen, selectedCourse, closeLessonModal } = useStore();
+export const LessonModal = () => {
+  const {
+    isLessonModalOpen,
+    selectedCourse,
+    currentLessonIndex,
+    closeLessonModal,
+    nextLesson,
+    previousLesson,
+  } = useStore();
 
-  if (!selectedCourse) return null;
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  // const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
 
-  const totalDuration = selectedCourse.videos.reduce((total, video) => {
-    const [minutes, seconds] = video.duration.split(":").map(Number);
-    return total + minutes + seconds / 60;
-  }, 0);
+  // Parse duration string (e.g., "15:30" -> seconds)
+  const parseDuration = useCallback((durationStr: string) => {
+    const [minutes, seconds] = durationStr.split(":").map(Number);
+    return minutes * 60 + seconds;
+  }, []);
+
+  const formatTime = useCallback((seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }, []);
+
+  const handlePlayPause = useCallback(() => {
+    setIsPlaying(!isPlaying);
+  }, [isPlaying]);
+
+  const handleProgressClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!selectedCourse?.videos[currentLessonIndex]) return;
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const newProgress = (clickX / rect.width) * 100;
+      setProgress(newProgress);
+
+      const currentLesson = selectedCourse.videos[currentLessonIndex];
+      const totalDuration = parseDuration(currentLesson.duration);
+      const newTime = (newProgress / 100) * totalDuration;
+      setCurrentTime(newTime);
+    },
+    [selectedCourse, currentLessonIndex, parseDuration]
+  );
+
+  const handlePreviousLesson = useCallback(() => {
+    const isFirstLesson = currentLessonIndex === 0;
+    if (!isFirstLesson) {
+      previousLesson();
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime(0);
+    }
+  }, [currentLessonIndex, previousLesson]);
+
+  const handleNextLesson = useCallback(() => {
+    if (!selectedCourse) return;
+    const isLastLesson =
+      currentLessonIndex === selectedCourse.videos.length - 1;
+    if (!isLastLesson) {
+      nextLesson();
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime(0);
+    }
+  }, [currentLessonIndex, selectedCourse, nextLesson]);
+
+  // Reset states when modal opens or lesson changes
+  useEffect(() => {
+    if (isLessonModalOpen) {
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime(0);
+    }
+  }, [isLessonModalOpen, currentLessonIndex]);
+
+  // Progress tracking effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isPlaying && selectedCourse?.videos[currentLessonIndex]) {
+      const currentLesson = selectedCourse.videos[currentLessonIndex];
+      const isLastLesson =
+        currentLessonIndex === selectedCourse.videos.length - 1;
+
+      interval = setInterval(() => {
+        const totalDuration = parseDuration(currentLesson.duration);
+        setCurrentTime((prev) => {
+          const newTime = prev + 1;
+          const newProgress = (newTime / totalDuration) * 100;
+          setProgress(newProgress);
+
+          // Auto advance to next lesson when current finishes
+          if (newTime >= totalDuration && !isLastLesson) {
+            handleNextLesson();
+            return 0;
+          }
+
+          return newTime >= totalDuration ? totalDuration : newTime;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [
+    isPlaying,
+    selectedCourse,
+    currentLessonIndex,
+    parseDuration,
+    handleNextLesson,
+  ]);
+
+  // Early return after all hooks have been called
+  if (!selectedCourse || !selectedCourse.videos[currentLessonIndex]) {
+    return null;
+  }
+
+  const currentLesson = selectedCourse.videos[currentLessonIndex];
+  const isFirstLesson = currentLessonIndex === 0;
+  const isLastLesson = currentLessonIndex === selectedCourse.videos.length - 1;
 
   return (
     <Dialog open={isLessonModalOpen} onOpenChange={closeLessonModal}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden bg-white">
-        <DialogHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <DialogTitle className="text-xl font-bold text-gray-900 mb-2">
-                {selectedCourse.title}
-              </DialogTitle>
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                <span className="flex items-center">
-                  <FiPlay className="w-4 h-4 mr-1" />
-                  {selectedCourse.videos.length} lessons
-                </span>
-                <span className="flex items-center">
-                  <FiClock className="w-4 h-4 mr-1" />
-                  {Math.round(totalDuration)} minutes
-                </span>
-                <span className="text-indigo-600 font-medium">
-                  {selectedCourse.currency}
-                  {selectedCourse.price.toLocaleString()}
-                </span>
-              </div>
-            </div>
-            {/* <button
-              onClick={closeLessonModal}
-              className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-            >
-              <FiX className="w-5 h-5" />
-            </button> */}
-          </div>
-        </DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-white p-0">
+        {/* Close Button */}
+        {/* <button
+          onClick={closeLessonModal}
+          className="absolute top-4 right-4 z-10 p-2 bg-black/20 hover:bg-black/40 rounded-full text-white transition-colors"
+        >
+          <FiX className="w-5 h-5" />
+        </button> */}
 
-        <div className="my-6">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Course Content
-            </h3>
-            <p className="text-sm text-gray-600">
-              {selectedCourse.description}
-            </p>
-          </div>
+        {/* Video Container */}
+        <div className="relative bg-black">
+          <div className="aspect-video w-full">
+            {/* Video Placeholder - In real app, use proper video component */}
+            <iframe
+              src={`${currentLesson.videoUrl}?autoplay=${
+                isPlaying ? 1 : 0
+              }&mute=1`}
+              className="w-full h-full"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={currentLesson.title}
+            />
 
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {selectedCourse.videos.map((video, index) => (
+            {/* Custom Video Controls Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              {/* Progress Bar */}
               <div
-                key={video.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                className="w-full h-2 bg-white/20 rounded-full cursor-pointer mb-4"
+                onClick={handleProgressClick}
               >
-                <div className="flex items-center space-x-3">
-                  <div className="flex-shrink-0">
-                    {video.isCompleted ? (
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                        <FiCheck className="w-4 h-4 text-white" />
-                      </div>
+                <div
+                  className="h-full bg-white rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex items-center justify-between text-white">
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={handlePlayPause}
+                    className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                  >
+                    {isPlaying ? (
+                      <FiPause className="w-6 h-6" />
                     ) : (
-                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <FiPlay className="w-4 h-4 text-indigo-600" />
-                      </div>
+                      <FiPlay className="w-6 h-6" />
                     )}
-                  </div>
+                  </button>
 
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {index + 1}. {video.title}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-500">
-                    {video.duration}
+                  <span className="text-sm">
+                    {formatTime(currentTime)} / {currentLesson.duration}
                   </span>
                 </div>
               </div>
-            ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-6">
+          {/* Lesson Info */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-medium text-black">
+                {currentLesson.title}
+              </h2>
+              <span className="text-sm text-[#54656F] font-light">
+                Lesson {String(currentLessonIndex + 1).padStart(2, "0")}
+              </span>
+            </div>
+
+            <p className="text-[#54656F] text-base font-normal leading-relaxed">
+              {currentLesson.description}
+            </p>
           </div>
 
-          <div className="mt-6 flex space-x-3">
-            <Button className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white">
-              Enroll Now - {selectedCourse.currency}
-              {selectedCourse.price.toLocaleString()}
+          {/* Navigation Buttons */}
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={handlePreviousLesson}
+              disabled={isFirstLesson}
+              className="px-6 rounded-full border-[#54656F] text-[#54656F] cursor-pointer font-light"
+            >
+              Previous Lesson
             </Button>
-            <Button variant="outline" className="px-6">
-              Preview
+
+            <Button
+              value="default"
+              onClick={handleNextLesson}
+              disabled={isLastLesson}
+              className="bg-[#7B61FF] text-white px-6 rounded-full cursor-pointer font-light"
+            >
+              Next Lesson
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
   );
-}
+};

@@ -1,9 +1,10 @@
 "use client";
-
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Course } from "@/utils/types";
 import { useStore } from "@/store/useStore";
-import { FiClock, FiBookmark, FiPlay } from "react-icons/fi";
+import { FiBookmark } from "react-icons/fi";
+import { FaListUl } from "react-icons/fa";
+import { FaRegCirclePlay } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 
 interface CourseCardProps {
@@ -11,21 +12,28 @@ interface CourseCardProps {
 }
 
 export default function CourseCard({ course }: CourseCardProps) {
-  const { savedCourses, toggleSavedCourse, openLessonModal } = useStore();
+  const router = useRouter();
+  const { savedCourses, toggleSavedCourse } = useStore();
   const isSaved = savedCourses.includes(course.id);
 
+  const handlePlayClick = () => {
+    router.push(`/courses/${course.slug}`);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      <div className="relative">
-        <Image
-          width={200}
-          height={150}
-          src={course.image}
-          alt={course.title}
-          className="w-full h-48 object-cover"
-        />
+    <div className="rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+      <div
+        className="relative w-full h-48 rounded-2xl"
+        style={{
+          background: `linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.8) 100%), url('${course.image}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         <Button
           variant="default"
+          size="icon"
           onClick={() => toggleSavedCourse(course.id)}
           className={`absolute top-3 right-3 rounded-full transition-colors cursor-pointer ${
             isSaved
@@ -33,8 +41,9 @@ export default function CourseCard({ course }: CourseCardProps) {
               : "bg-white text-gray-600 hover:bg-gray-50"
           }`}
         >
-          <FiBookmark className="text-xl font-bold" />
+          <FiBookmark className="w-4 h-4" />
         </Button>
+        <FaRegCirclePlay className="text-4xl text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
       </div>
 
       <div className="p-4">
@@ -49,27 +58,18 @@ export default function CourseCard({ course }: CourseCardProps) {
         <div className="flex items-center justify-between mb-4">
           <Button
             variant="ghost"
-            onClick={() => openLessonModal(course)}
-            className="flex items-center text-sm text-indigo-600 hover:text-indigo-700 font-medium cursor-pointer"
+            className="flex items-center gap-2 text-sm text-[#667085] font-light p-0 h-auto"
           >
-            <FiPlay className="w-4 h-4 mr-1" />
+            <FaListUl className="text-lg text-[#667085]" />
             {course.lessons} Lessons
           </Button>
 
-          <div className="flex items-center text-sm text-gray-500">
-            <FiClock className="w-4 h-4 mr-1" />
-            {course.duration}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-gray-900">
-            {course.currency}
-            {course.price.toLocaleString()}
-          </span>
-
-          <Button className="bg-[#7B61FF] hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-light cursor-pointer">
-            Get
+          <Button
+            variant="outline"
+            onClick={handlePlayClick}
+            className="flex items-center text-sm text-[#7B61FF] hover:text-[#7B61FF] border-2 border-[#7B61FF] outline-[#7B61FF] cursor-pointer px-2 py-1 rounded-full h-auto font-light"
+          >
+            Start Learning
           </Button>
         </div>
       </div>

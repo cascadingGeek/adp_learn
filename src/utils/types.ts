@@ -10,6 +10,7 @@ export interface Course {
   instructor: string;
   duration: string;
   videos: CourseVideo[];
+  slug: string;
 }
 
 export interface CourseVideo {
@@ -18,4 +19,37 @@ export interface CourseVideo {
   duration: string;
   isCompleted: boolean;
   videoUrl: string;
+  description: string;
+}
+
+export interface Contact {
+  id: string;
+  name: string;
+  avatar: string;
+  lastMessage: string;
+  time: string;
+  isOnline: boolean;
+  unreadCount?: number;
+}
+
+export interface Message {
+  id: string;
+  senderId: string;
+  content: string;
+  timestamp: string;
+  isOwn: boolean;
+}
+
+export interface SyllabusData {
+  title: string;
+  overview: string;
+  modules: {
+    id: string;
+    title: string;
+    lessons: {
+      id: string;
+      title: string;
+      topics: string[];
+    }[];
+  }[];
 }
