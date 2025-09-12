@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 export interface User {
   id: string;
   email: string;
+  fullName: string;
   firstName?: string;
   lastName?: string;
   avatar?: string;
@@ -18,22 +19,35 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  hasCompletedOnboarding: boolean;
+  tokenExpiryTime: number | null; // Unix timestamp
 
   // Actions
-  signIn: (email: string, password: string) => Promise<boolean>;
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; message?: string }>;
   signUp: (
     email: string,
     password: string,
     fullName: string
-  ) => Promise<boolean>;
+  ) => Promise<{ success: boolean; message?: string }>;
   signOut: () => void;
-  googleAuth: () => Promise<boolean>;
-  //   refreshAccessToken: () => Promise<boolean>;
+  googleAuth: () => Promise<{ success: boolean; message?: string }>;
   clearError: () => void;
   setLoading: (loading: boolean) => void;
+  setOnboardingComplete: () => void;
+  checkOnboardingStatus: () => boolean;
+  checkTokenExpiry: () => boolean;
+  initializeAuth: () => void;
 }
 
 const NEXT_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+// Global user access helper
+export const getCurrentUser = () => {
+  return useAuthStore.getState().user;
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -44,6 +58,48 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      hasCompletedOnboarding: false,
+      tokenExpiryTime: null,
+
+      initializeAuth: () => {
+        const state = get();
+        // console.log("Initializing auth state:", state);
+
+        if (state.token && state.tokenExpiryTime) {
+          const now = Date.now();
+          if (now >= state.tokenExpiryTime) {
+            // console.log("Token expired during initialization, logging out");
+            get().signOut();
+            // Show expiry toast if toast context is available
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("tokenExpired"));
+            }
+          } else {
+            // Token is still valid, check onboarding status
+            const onboardingCompleted =
+              localStorage.getItem("onboarding-completed") === "true";
+            set({
+              hasCompletedOnboarding: onboardingCompleted,
+              isLoading: false,
+            });
+          }
+        } else {
+          set({ isLoading: false });
+        }
+      },
+
+      checkTokenExpiry: () => {
+        const { tokenExpiryTime, signOut } = get();
+        if (tokenExpiryTime && Date.now() >= tokenExpiryTime) {
+          signOut();
+          // Dispatch custom event for token expiry
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("tokenExpired"));
+          }
+          return true;
+        }
+        return false;
+      },
 
       signIn: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
@@ -58,22 +114,59 @@ export const useAuthStore = create<AuthState>()(
           });
 
           const data = await response.json();
+          // console.log("SignIn API response:", data);
 
           if (!response.ok) {
             throw new Error(data.message || "Sign in failed");
           }
 
+          // Map the new API response structure to user object
+          const user: User = {
+            id: data.fullName,
+            email: data.fullName,
+            fullName: data.email,
+            firstName: data.email?.split(" ")[0] || "",
+            lastName: data.email?.split(" ").slice(1).join(" ") || "",
+            createdAt: new Date().toISOString(),
+            isEmailVerified: true,
+          };
+
+          // Calculate expiry time (current time + expiryTimeInSec)
+          const expiryTimeInSec = parseInt(data.expiryTimeInSec);
+          const tokenExpiryTime = Date.now() + expiryTimeInSec * 1000;
+
+          // Check if user has completed onboarding
+          const onboardingCompleted =
+            localStorage.getItem("onboarding-completed") === "true";
+
           set({
-            user: data.user,
+            user,
             token: data.token,
-            refreshToken: data.refreshToken,
+            refreshToken: data.refreshToken || null,
             isAuthenticated: true,
             isLoading: false,
             error: null,
+            hasCompletedOnboarding: onboardingCompleted,
+            tokenExpiryTime,
           });
 
-          return true;
+          // console.log("Auth state updated:", {
+          //   user,
+          //   isAuthenticated: true,
+          //   tokenExpiryTime: new Date(tokenExpiryTime).toISOString(),
+          // });
+
+          // Set up automatic logout before token expires (5 minutes before)
+          const timeUntilExpiry = expiryTimeInSec * 1000;
+          const warningTime = Math.max(timeUntilExpiry - 5 * 60 * 1000, 0);
+
+          setTimeout(() => {
+            get().checkTokenExpiry();
+          }, warningTime);
+
+          return { success: true, message: "Successfully signed in!" };
         } catch (error) {
+          console.error("SignIn error:", error);
           const message =
             error instanceof Error ? error.message : "Sign in failed";
           set({
@@ -83,8 +176,9 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             token: null,
             refreshToken: null,
+            tokenExpiryTime: null,
           });
-          return false;
+          return { success: false, message };
         }
       },
 
@@ -107,27 +201,22 @@ export const useAuthStore = create<AuthState>()(
           }
 
           set({
-            user: data.user,
-            token: data.token,
-            refreshToken: data.refreshToken,
-            isAuthenticated: true,
             isLoading: false,
             error: null,
           });
 
-          return true;
+          return {
+            success: true,
+            message: data.message || "Account created successfully!",
+          };
         } catch (error) {
           const message =
             error instanceof Error ? error.message : "Sign up failed";
           set({
             error: message,
             isLoading: false,
-            isAuthenticated: false,
-            user: null,
-            token: null,
-            refreshToken: null,
           });
-          return false;
+          return { success: false, message };
         }
       },
 
@@ -135,8 +224,6 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
 
         try {
-          // For Google OAuth, you'd typically redirect to Google
-          // This is a placeholder for the OAuth flow
           const response = await fetch(`${NEXT_BASE_URL}/api/auth/google`, {
             method: "POST",
             headers: {
@@ -150,16 +237,38 @@ export const useAuthStore = create<AuthState>()(
             throw new Error(data.message || "Google authentication failed");
           }
 
+          // Map response similar to signIn
+          const user: User = {
+            id: data.email,
+            email: data.email,
+            fullName: data.fullName,
+            firstName: data.fullName?.split(" ")[0] || "",
+            lastName: data.fullName?.split(" ").slice(1).join(" ") || "",
+            createdAt: new Date().toISOString(),
+            isEmailVerified: true,
+          };
+
+          const expiryTimeInSec = parseInt(data.expiryTimeInSec);
+          const tokenExpiryTime = Date.now() + expiryTimeInSec * 1000;
+
+          const onboardingCompleted =
+            localStorage.getItem("onboarding-completed") === "true";
+
           set({
-            user: data.user,
+            user,
             token: data.token,
-            refreshToken: data.refreshToken,
+            refreshToken: data.refreshToken || null,
             isAuthenticated: true,
             isLoading: false,
             error: null,
+            hasCompletedOnboarding: onboardingCompleted,
+            tokenExpiryTime,
           });
 
-          return true;
+          return {
+            success: true,
+            message: "Successfully authenticated with Google!",
+          };
         } catch (error) {
           const message =
             error instanceof Error
@@ -172,8 +281,9 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             token: null,
             refreshToken: null,
+            tokenExpiryTime: null,
           });
-          return false;
+          return { success: false, message };
         }
       },
 
@@ -184,12 +294,26 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           isAuthenticated: false,
           error: null,
+          hasCompletedOnboarding: false,
+          tokenExpiryTime: null,
         });
       },
 
       clearError: () => set({ error: null }),
 
       setLoading: (loading: boolean) => set({ isLoading: loading }),
+
+      setOnboardingComplete: () => {
+        localStorage.setItem("onboarding-completed", "true");
+        set({ hasCompletedOnboarding: true });
+      },
+
+      checkOnboardingStatus: () => {
+        const completed =
+          localStorage.getItem("onboarding-completed") === "true";
+        set({ hasCompletedOnboarding: completed });
+        return completed;
+      },
     }),
     {
       name: "auth-storage",
@@ -198,7 +322,15 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
+        tokenExpiryTime: state.tokenExpiryTime,
       }),
+      onRehydrateStorage: () => (state) => {
+        // console.log("Rehydrating auth state:", state);
+        if (state) {
+          // Initialize auth state after rehydration
+          setTimeout(() => state.initializeAuth(), 0);
+        }
+      },
     }
   )
 );

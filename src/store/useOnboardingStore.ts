@@ -39,8 +39,9 @@ export interface OnboardingState {
   setTheme: (theme: "light" | "dark" | "system") => void;
   nextStep: () => void;
   prevStep: () => void;
-  submitPreferences: () => Promise<void>;
+  submitPreferences: () => Promise<{ success: boolean; message?: string }>;
   reset: () => void;
+  clearError: () => void;
 }
 
 const initialPreferences: UserPreferences = {
@@ -66,7 +67,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       updatePreferences: (updates) =>
         set((state) => ({
           preferences: { ...state.preferences, ...updates },
-          error: null,
+          error: null, // Clear error when user makes changes
         })),
 
       setTheme: (theme) => set({ theme }),
@@ -81,8 +82,12 @@ export const useOnboardingStore = create<OnboardingState>()(
           currentStep: Math.max(state.currentStep - 1, 1),
         })),
 
+      clearError: () => set({ error: null }),
+
       submitPreferences: async () => {
         const { preferences } = get();
+
+        // console.log("Submitting preferences:", preferences);
 
         // Validate required fields
         if (
@@ -92,8 +97,9 @@ export const useOnboardingStore = create<OnboardingState>()(
           !preferences.learningReference ||
           preferences.peerReview === null
         ) {
-          set({ error: "Please complete all required fields" });
-          return;
+          const errorMessage = "Please complete all required fields";
+          set({ error: errorMessage });
+          return { success: false, message: errorMessage };
         }
 
         set({ isSubmitting: true, error: null });
@@ -104,6 +110,9 @@ export const useOnboardingStore = create<OnboardingState>()(
             ...preferences,
             peerReview: preferences.peerReview === true,
           };
+
+          // console.log("API payload:", payload);
+
           const NEXT_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
           const response = await fetch(
             `${NEXT_BASE_URL}/api/auth/dashboard/onboard`,
@@ -116,17 +125,52 @@ export const useOnboardingStore = create<OnboardingState>()(
             }
           );
 
+          // console.log("API response status:", response.status);
+
+          // Parse response
+          let responseData;
+          try {
+            responseData = await response.json();
+            // console.log("API response data:", responseData);
+          } catch (parseError) {
+            console.error("Failed to parse response:", parseError);
+            throw new Error("Invalid response from server");
+          }
+
           if (!response.ok) {
-            throw new Error("Failed to save preferences");
+            // Handle different error scenarios
+            const errorMessage =
+              responseData?.message ||
+              responseData?.error ||
+              `Server error: ${response.status}`;
+
+            console.error("API error:", errorMessage);
+            set({ error: errorMessage, isSubmitting: false });
+            return { success: false, message: errorMessage };
           }
 
           // Success - preferences saved
-          console.log("Preferences saved successfully");
+          // console.log("Preferences saved successfully");
+          set({ isSubmitting: false, error: null });
+
+          return {
+            success: true,
+            message: responseData?.message || "Preferences saved successfully!",
+          };
         } catch (error) {
           console.error("Error saving preferences:", error);
-          set({ error: "Failed to save preferences. Please try again." });
-        } finally {
-          set({ isSubmitting: false });
+
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Failed to save preferences. Please check your connection and try again.";
+
+          set({
+            error: errorMessage,
+            isSubmitting: false,
+          });
+
+          return { success: false, message: errorMessage };
         }
       },
 

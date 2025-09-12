@@ -300,86 +300,86 @@ export const courses = [
       },
     ],
   },
-  {
-    id: "4",
-    slug: "effective-email-communication",
-    title: "Effective E-mail Communication",
-    description:
-      "Explore e-mail best practices and tips to improve communication game!",
-    lessons: 7,
-    price: 20000,
-    currency: "₦",
-    image:
-      "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=400&h=250&fit=crop",
-    category: "Communication",
-    instructor: "Sarah Wilson",
-    duration: "3 hours",
-    videos: [
-      {
-        id: "1",
-        title: "Email Etiquette Basics",
-        description:
-          "Master professional email communication with proper formatting, tone, and etiquette guidelines.",
-        duration: "15:30",
-        isCompleted: false,
-        videoUrl: "https://www.youtube.com/embed/F1ACUvdC6T8",
-      },
-      {
-        id: "2",
-        title: "Writing Professional Emails",
-        description:
-          "Craft clear, concise, and effective emails that get results in professional settings.",
-        duration: "22:45",
-        isCompleted: false,
-        videoUrl: "https://www.youtube.com/embed/PJKqnAjJ4Y8",
-      },
-      {
-        id: "3",
-        title: "Email Structure and Formatting",
-        description:
-          "Learn the optimal structure and formatting techniques for maximum email readability and impact.",
-        duration: "18:20",
-        isCompleted: false,
-        videoUrl: "https://www.youtube.com/embed/6wLgDH2bZTE",
-      },
-      {
-        id: "4",
-        title: "Managing Email Overload",
-        description:
-          "Develop strategies to efficiently manage your inbox and reduce email-related stress.",
-        duration: "25:10",
-        isCompleted: false,
-        videoUrl: "https://www.youtube.com/embed/UC7GT1ILT6A",
-      },
-      {
-        id: "5",
-        title: "Email Marketing Basics",
-        description:
-          "Understand the fundamentals of email marketing for business growth and customer engagement.",
-        duration: "20:15",
-        isCompleted: false,
-        videoUrl: "https://www.youtube.com/embed/B8O8U1nV3JI",
-      },
-      {
-        id: "6",
-        title: "Cross-cultural Communication",
-        description:
-          "Navigate email communication across different cultures and international business contexts.",
-        duration: "30:25",
-        isCompleted: false,
-        videoUrl: "https://www.youtube.com/embed/c9qSw-6w-N8",
-      },
-      {
-        id: "7",
-        title: "Email Security Best Practices",
-        description:
-          "Protect yourself and your organization from email-based security threats and attacks.",
-        duration: "12:40",
-        isCompleted: false,
-        videoUrl: "https://www.youtube.com/embed/GSIDS_lvRv4",
-      },
-    ],
-  },
+  // {
+  //   id: "4",
+  //   slug: "effective-email-communication",
+  //   title: "Effective E-mail Communication",
+  //   description:
+  //     "Explore e-mail best practices and tips to improve communication game!",
+  //   lessons: 7,
+  //   price: 20000,
+  //   currency: "₦",
+  //   image:
+  //     "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=400&h=250&fit=crop",
+  //   category: "Communication",
+  //   instructor: "Sarah Wilson",
+  //   duration: "3 hours",
+  //   videos: [
+  //     {
+  //       id: "1",
+  //       title: "Email Etiquette Basics",
+  //       description:
+  //         "Master professional email communication with proper formatting, tone, and etiquette guidelines.",
+  //       duration: "15:30",
+  //       isCompleted: false,
+  //       videoUrl: "https://www.youtube.com/embed/F1ACUvdC6T8",
+  //     },
+  //     {
+  //       id: "2",
+  //       title: "Writing Professional Emails",
+  //       description:
+  //         "Craft clear, concise, and effective emails that get results in professional settings.",
+  //       duration: "22:45",
+  //       isCompleted: false,
+  //       videoUrl: "https://www.youtube.com/embed/PJKqnAjJ4Y8",
+  //     },
+  //     {
+  //       id: "3",
+  //       title: "Email Structure and Formatting",
+  //       description:
+  //         "Learn the optimal structure and formatting techniques for maximum email readability and impact.",
+  //       duration: "18:20",
+  //       isCompleted: false,
+  //       videoUrl: "https://www.youtube.com/embed/6wLgDH2bZTE",
+  //     },
+  //     {
+  //       id: "4",
+  //       title: "Managing Email Overload",
+  //       description:
+  //         "Develop strategies to efficiently manage your inbox and reduce email-related stress.",
+  //       duration: "25:10",
+  //       isCompleted: false,
+  //       videoUrl: "https://www.youtube.com/embed/UC7GT1ILT6A",
+  //     },
+  //     {
+  //       id: "5",
+  //       title: "Email Marketing Basics",
+  //       description:
+  //         "Understand the fundamentals of email marketing for business growth and customer engagement.",
+  //       duration: "20:15",
+  //       isCompleted: false,
+  //       videoUrl: "https://www.youtube.com/embed/B8O8U1nV3JI",
+  //     },
+  //     {
+  //       id: "6",
+  //       title: "Cross-cultural Communication",
+  //       description:
+  //         "Navigate email communication across different cultures and international business contexts.",
+  //       duration: "30:25",
+  //       isCompleted: false,
+  //       videoUrl: "https://www.youtube.com/embed/c9qSw-6w-N8",
+  //     },
+  //     {
+  //       id: "7",
+  //       title: "Email Security Best Practices",
+  //       description:
+  //         "Protect yourself and your organization from email-based security threats and attacks.",
+  //       duration: "12:40",
+  //       isCompleted: false,
+  //       videoUrl: "https://www.youtube.com/embed/GSIDS_lvRv4",
+  //     },
+  //   ],
+  // },
 ];
 
 export const steps = [

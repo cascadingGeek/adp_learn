@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 import {
   ChevronLeft,
   ChevronRight,
@@ -74,6 +76,7 @@ const OptionCard = ({ icon, label, isSelected, onClick }: OptionCardProps) => (
 
 export default function OnboardingWizard() {
   const router = useRouter();
+  const { setOnboardingComplete } = useAuthStore();
   const {
     currentStep,
     preferences,
@@ -104,9 +107,36 @@ export default function OnboardingWizard() {
 
   const handleNext = async () => {
     if (currentStep === 6) {
-      await submitPreferences();
-      if (!error) {
-        router.push("/courses");
+      // console.log("Submitting onboarding preferences...");
+
+      // Call submitPreferences and wait for the result
+      const result = await submitPreferences();
+
+      // console.log("Submit result:", result);
+
+      // Check the result returned from submitPreferences
+      if (result?.success) {
+        // console.log("Onboarding submission successful");
+
+        // Mark onboarding as complete
+        setOnboardingComplete();
+
+        toast.success(
+          "Welcome to ADPLearn! Your preferences have been saved.",
+          { duration: 2000 }
+        );
+
+        // Redirect to courses page after successful onboarding
+        setTimeout(() => {
+          router.push("/courses");
+        }, 1500);
+      } else {
+        // console.log("Onboarding submission failed:", result?.message || error);
+
+        toast.error(
+          result?.message || "Failed to save preferences. Please try again.",
+          { duration: 3000 }
+        );
       }
     } else {
       nextStep();
@@ -435,7 +465,7 @@ export default function OnboardingWizard() {
   };
 
   return (
-    <div className="absolute top-0 left-0 min-h-screen w-full bg-black/70 backdrop-blur-lg flex items-center justify-center">
+    <div className="absolute top-0 left-0 min-h-screen w-full bg-black/70 backdrop-blur-lg flex items-center justify-center z-50">
       <Card className="w-full max-w-xl shadow-xl rounded-2xl p-6 bg-[#F8FCFF]">
         <CardContent className="py-0 px-5">
           {/* Step content */}
@@ -453,8 +483,8 @@ export default function OnboardingWizard() {
             <Button
               variant="ghost"
               onClick={prevStep}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2 text-[#54656F] bg-[#E2E5E8] hover:text-gray-800 rounded-full text-sm font-light cursor-pointer"
+              disabled={currentStep === 1 || isSubmitting}
+              className="flex items-center gap-2 text-[#54656F] bg-[#E2E5E8] hover:text-gray-800 rounded-full text-sm font-light cursor-pointer disabled:opacity-50"
             >
               <ChevronLeft className="w-4 h-4" />
               Go back
@@ -463,12 +493,12 @@ export default function OnboardingWizard() {
             <Button
               onClick={handleNext}
               disabled={!isStepComplete() || isSubmitting}
-              className="flex items-center gap-2 bg-[#7B61FF] hover:bg-[#7B61FF] text-white px-6 rounded-full text-sm font-light cursor-pointer"
+              className="flex items-center gap-2 bg-[#7B61FF] hover:bg-[#7B61FF] text-white px-6 rounded-full text-sm font-light cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
                 "Saving..."
               ) : currentStep === 6 ? (
-                "Go to Dashboard"
+                "Complete Setup"
               ) : (
                 <>
                   Next

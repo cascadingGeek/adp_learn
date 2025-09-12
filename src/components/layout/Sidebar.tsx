@@ -9,6 +9,7 @@ import { FiX } from "react-icons/fi";
 import { menuItems, bottomMenuItems } from "@/utils/data";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -18,7 +19,15 @@ export default function Sidebar() {
 
   const handleSignOut = () => {
     signOut();
-    router.push("/signin");
+    toast.success("Successfully logged out!", { duration: 1500 });
+
+    // localStorage.removeItem("onboarding-completed");
+    // localStorage.removeItem("onboarding-storage");
+
+    // Redirect to signin page
+    setTimeout(() => {
+      router.push("/signin");
+    }, 1000);
   };
 
   return (
@@ -87,18 +96,12 @@ export default function Sidebar() {
             <Button
               variant="ghost"
               className="flex items-center justify-start gap-5 w-full px-3 py-2 text-sm font-medium text-gray-600 rounded-lg hover:text-gray-900 bg-transparent hover:bg-gray-50 transition-colors cursor-pointer"
-              onClick={() => router.push("/")}
+              onClick={handleSignOut}
             >
               <FaArrowLeftLong className="text-lg" />
               Log Out
             </Button>
           </nav>
-
-          {/* <div className="px-4 py-6 border-t border-gray-200 bg-[red]">
-            <nav className="space-y-1">
-              
-            </nav>
-          </div> */}
         </div>
       </aside>
 
@@ -111,7 +114,7 @@ export default function Sidebar() {
       >
         <div className="flex flex-col flex-1 min-h-0">
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-indigo-600">ADPLearn</h1>
+            <h1 className="text-2xl font-bold text-[#7058E8]">ADPLearn</h1>
             <Button
               variant="ghost"
               onClick={() => setSidebarOpen(false)}
@@ -132,13 +135,17 @@ export default function Sidebar() {
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                    "flex items-center px-3 py-2 gap-5 text-sm font-medium rounded-lg transition-colors",
                     isActive
-                      ? "bg-indigo-50 text-indigo-700"
+                      ? "bg-[#F8FCF8] text-[#7058E8]"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   )}
                 >
-                  <Icon className="w-5 h-5 mr-3" />
+                  <Icon
+                    className={`text-lg ${
+                      isActive ? "text-[#7058E8]" : "text-[#667085]"
+                    }`}
+                  />
                   {item.label}
                 </Link>
               );
@@ -157,13 +164,17 @@ export default function Sidebar() {
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={cn(
-                      "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                      "flex items-center px-3 py-2 gap-5 text-sm font-medium rounded-lg transition-colors",
                       isActive
-                        ? "bg-indigo-50 text-indigo-700"
+                        ? "bg-[#F8FCF8] text-[#7058E8]"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                     )}
                   >
-                    <Icon className="w-5 h-5 mr-3" />
+                    <Icon
+                      className={`text-lg ${
+                        isActive ? "text-[#7058E8]" : "text-[#667085]"
+                      }`}
+                    />
                     {item.label}
                   </Link>
                 );
@@ -181,6 +192,14 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
+
+      {/* Mobile overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </>
   );
 }

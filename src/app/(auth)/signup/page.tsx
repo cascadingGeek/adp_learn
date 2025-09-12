@@ -8,6 +8,7 @@ import { FcGoogle } from "react-icons/fc";
 import { AlertCircle, Eye, EyeOff, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 type AuthView = "initial" | "form";
 
@@ -39,7 +40,7 @@ const SignUpPage = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
-      router.push("/dashboard");
+      router.push("/signin");
     }
   }, [isAuthenticated, user, router]);
 
@@ -78,23 +79,31 @@ const SignUpPage = () => {
       return;
     }
 
-    const success = await signUp(
+    const result = await signUp(
       formData.email,
       formData.password,
       formData.fullName
     );
 
-    if (success) {
-      // User will be redirected to onboarding by useEffect
-      console.log("Sign up successful");
+    if (result.success) {
+      toast.success(result.message!, { duration: 1500 });
+      // Redirect to sign in page after successful signup
+      setTimeout(() => {
+        router.push("/signin");
+      }, 1500);
+    } else {
+      toast.error(result.message!, { duration: 1500 });
     }
   };
 
   const handleGoogleSignUp = async () => {
-    const success = await googleAuth();
+    const result = await googleAuth();
 
-    if (success) {
-      console.log("Google sign up successful");
+    if (result.success) {
+      toast.success(result.message!, { duration: 1500 });
+      // Handle Google auth redirect logic here if needed
+    } else {
+      toast.error(result.message!, { duration: 1500 });
     }
   };
 
@@ -153,7 +162,7 @@ const SignUpPage = () => {
               variant="outline"
               className="w-full h-12 border-none outline-0 bg-[#E2E5E8] rounded-full cursor-pointer flex items-center justify-center gap-2"
               onClick={handleGoogleSignUp}
-              disabled={isLoading}
+              disabled
             >
               <FcGoogle className="text-xl" />
               {isLoading ? "Signing up..." : "Sign up with Google"}

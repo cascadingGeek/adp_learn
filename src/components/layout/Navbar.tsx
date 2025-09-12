@@ -5,11 +5,18 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FiMenu } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store/useStore";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Navbar() {
+  const { user } = useAuthStore();
   const { toggleSidebar } = useStore();
   const pathname = usePathname();
+  const router = useRouter();
+
+  if (!user) return null;
+
+  // console.log({ user });
 
   const getRouteTitle = (path: string): string => {
     const segments = path.split("/").filter(Boolean);
@@ -51,18 +58,22 @@ export default function Navbar() {
           <Button
             variant="ghost"
             className="p-0 rounded-md text-gray-600 hover:text-gray-900 bg-transparent hover:bg-gray-100 relative cursor-pointer"
+            onClick={() => router.push("/notifications")}
           >
             <GoBell className="text-5xl" />
-            <div className="absolute top-[2px] right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+            <div className="absolute top-[2px] right-2 w-3 h-3 bg-red-500 rounded-full"></div>
           </Button>
 
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-medium">AS</span>
+              <span className="text-white text-sm font-medium uppercase">
+                {user.firstName.slice(0, 1)}
+                {user.lastName.slice(0, 1)}
+              </span>
             </div>
             <div className="hidden sm:block">
-              <p className="text-sm font-medium text-gray-900">
-                Ademuyiwa Sunkanmi
+              <p className="text-sm font-medium text-gray-900 capitalize">
+                {user.fullName}
               </p>
               <p className="text-xs text-gray-500">Learner</p>
             </div>

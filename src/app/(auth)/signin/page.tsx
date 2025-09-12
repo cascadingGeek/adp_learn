@@ -8,6 +8,7 @@ import { FcGoogle } from "react-icons/fc";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 type AuthView = "initial" | "form";
 
@@ -28,22 +29,20 @@ const SignInPage = () => {
     clearError,
     isAuthenticated,
     user,
+    checkOnboardingStatus,
   } = useAuthStore();
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Check if user has completed onboarding
-      const hasCompletedOnboarding = localStorage.getItem(
-        "onboarding-completed"
-      );
+      const hasCompletedOnboarding = checkOnboardingStatus();
       if (hasCompletedOnboarding) {
-        router.push("/dashboard");
+        router.push("/courses");
       } else {
-        router.push("/onboarding");
+        router.push("/dashboard");
       }
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, router, checkOnboardingStatus]);
 
   // Clear error when component mounts or view changes
   useEffect(() => {
@@ -57,19 +56,42 @@ const SignInPage = () => {
       return;
     }
 
-    const success = await signIn(formData.email, formData.password);
+    const result = await signIn(formData.email, formData.password);
 
-    if (success) {
-      // Navigation will be handled by the useEffect above
-      console.log("Sign in successful");
+    if (result.success) {
+      toast.success(result.message!, { duration: 1500 });
+
+      // Check onboarding status and redirect accordingly
+      const hasCompletedOnboarding = checkOnboardingStatus();
+      setTimeout(() => {
+        if (hasCompletedOnboarding) {
+          router.push("/courses");
+        } else {
+          router.push("/dashboard");
+        }
+      }, 1500);
+    } else {
+      toast(result.message!, { duration: 1500 });
     }
   };
 
   const handleGoogleSignIn = async () => {
-    const success = await googleAuth();
+    const result = await googleAuth();
 
-    if (success) {
-      console.log("Google sign in successful");
+    if (result.success) {
+      toast.success(result.message!, { duration: 1500 });
+
+      // Check onboarding status and redirect accordingly
+      const hasCompletedOnboarding = checkOnboardingStatus();
+      setTimeout(() => {
+        if (hasCompletedOnboarding) {
+          router.push("/courses");
+        } else {
+          router.push("/dashboard");
+        }
+      }, 1500);
+    } else {
+      toast.error(result.message!, { duration: 1500 });
     }
   };
 
@@ -102,9 +124,9 @@ const SignInPage = () => {
               Welcome to <span className="text-[#7B61FF]">ADPLearn</span>
             </h1>
             <p className="text-[#686A6B]">
-              Create an account
+              Sign in to your account
               <br />
-              to get started
+              to continue learning
             </p>
           </div>
 
@@ -122,7 +144,7 @@ const SignInPage = () => {
               variant="outline"
               className="w-full h-12 border-none outline-0 bg-[#E2E5E8] rounded-full cursor-pointer flex items-center justify-center gap-2"
               onClick={handleGoogleSignIn}
-              disabled={isLoading}
+              disabled
             >
               <FcGoogle className="text-xl" />
               {isLoading ? "Signing in..." : "Sign in with Google"}
@@ -149,7 +171,7 @@ const SignInPage = () => {
           </p>
 
           <p className="text-xs text-gray-500 text-center">
-            By signing up, you agree to our{" "}
+            By signing in, you agree to our{" "}
             <Link href="/terms" className="underline">
               terms of services
             </Link>
@@ -183,8 +205,7 @@ const SignInPage = () => {
         <div className="w-full max-w-md space-y-6">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold">
-              Getting Started with{" "}
-              <span className="text-[#7B61FF]">ADPLearn</span>
+              Welcome Back to <span className="text-[#7B61FF]">ADPLearn</span>
             </h1>
           </div>
 

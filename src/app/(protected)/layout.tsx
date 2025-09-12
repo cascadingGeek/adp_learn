@@ -1,5 +1,8 @@
+"use client";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
+import { AuthGuard } from "@/components/AuthGuard";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 
 const geistSans = Geist({
@@ -17,9 +20,13 @@ export default function ProtectedLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useAuthRedirect();
+
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable}`}>
-      <DashboardLayout>{children}</DashboardLayout>
-    </div>
+    <AuthGuard>
+      <div className={`${geistSans.variable} ${geistMono.variable}`}>
+        <DashboardLayout>{children}</DashboardLayout>
+      </div>
+    </AuthGuard>
   );
 }
