@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import CourseGrid from "@/components/course/CourseGrid";
 import { FiSearch, FiGrid, FiList } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
@@ -9,13 +10,24 @@ import { CourseListView } from "@/components/course/CourseListView";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoFilter } from "react-icons/io5";
 import FilterDialog, { FilterState } from "@/components/course/FilterDialog";
+import { Pagination } from "@/components/Pagination";
 
 export default function CoursesPage() {
-  const { courses } = useStore();
+  const { user } = useAuthStore();
+  const {
+    userPreferredCourses,
+    initializeUserCourses,
+    currentPage,
+    itemsPerPage,
+    setCurrentPage,
+    setItemsPerPage,
+  } = useStore();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Courses");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Filter state
   const [filters, setFilters] = useState<FilterState>({
@@ -25,6 +37,16 @@ export default function CoursesPage() {
     learningStyle: [],
     peerReview: [],
   });
+
+  // Initialize courses based on user preferences
+  useEffect(() => {
+    if (user) {
+      // Get user's skill area from onboarding or default to showing all
+      const userSkillArea = localStorage.getItem("user-skill-area") || "TECH";
+      initializeUserCourses(userSkillArea);
+      setIsLoading(false);
+    }
+  }, [user, initializeUserCourses]);
 
   // Apply filters to courses
   const applyFilters = (courses: any[]) => {
@@ -69,7 +91,7 @@ export default function CoursesPage() {
 
   // Filter courses based on search, category, and advanced filters
   const filteredCourses = applyFilters(
-    courses.filter((course) => {
+    userPreferredCourses.filter((course) => {
       const matchesSearch =
         course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -81,6 +103,13 @@ export default function CoursesPage() {
     })
   );
 
+  // Pagination logic
+  const totalCourses = filteredCourses.length;
+  const totalPages = Math.ceil(totalCourses / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentCourses = filteredCourses.slice(startIndex, endIndex);
+
   // Check if any filters are active
   const hasActiveFilters = Object.values(filters).some(
     (filterArray) => filterArray.length > 0
@@ -88,6 +117,16 @@ export default function CoursesPage() {
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleItemsPerPageChange = (count: number) => {
+    setItemsPerPage(count);
   };
 
   const clearAllFilters = () => {
@@ -100,7 +139,19 @@ export default function CoursesPage() {
     });
     setSearchTerm("");
     setSelectedCategory("All Courses");
+    setCurrentPage(1);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B61FF]"></div>
+        <p className="ml-4 text-gray-600">
+          Loading your personalized courses...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -108,8 +159,9 @@ export default function CoursesPage() {
       <div className="bg-[#7B61FF] text-white rounded-lg p-3 text-center flex items-center justify-center gap-2">
         <IoSettingsOutline className="text-white text-lg font-bold" />
         <h2 className="text-sm font-normal">
-          Adjust your preferences and accessibility tools to get course
-          suggestions that fit your goals and needs.{" "}
+          Courses personalized for your{" "}
+          {user?.email ? "learning goals" : "interests"}. Showing {totalCourses}{" "}
+          courses tailored to your preferences.
         </h2>
         <FilterDialog
           isOpen={isFilterOpen}
@@ -137,7 +189,10 @@ export default function CoursesPage() {
               type="text"
               placeholder="Search courses"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset to first page on search
+              }}
               className="w-full border-0 outline-0"
             />
             <FiSearch className="text-gray-400 text-lg" />
@@ -217,6 +272,7 @@ export default function CoursesPage() {
                       category as keyof FilterState
                     ].filter((v) => v !== value);
                     setFilters(newFilters);
+                    setCurrentPage(1);
                   }}
                   className="text-indigo-500 hover:text-indigo-700"
                 >
@@ -238,9 +294,9 @@ export default function CoursesPage() {
 
       {/* Course Grid/List */}
       {viewMode === "grid" ? (
-        <CourseGrid courses={filteredCourses} />
+        <CourseGrid courses={currentCourses} />
       ) : (
-        <CourseListView courses={filteredCourses} />
+        <CourseListView courses={currentCourses} />
       )}
 
       {/* Empty State */}
@@ -261,6 +317,16 @@ export default function CoursesPage() {
           </Button>
         </div>
       )}
+
+      {/* Pagination */}
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+        onItemsPerPageChange={handleItemsPerPageChange}
+      />
     </div>
   );
 }

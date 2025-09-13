@@ -136,15 +136,7 @@ export const LessonModal = () => {
 
   return (
     <Dialog open={isLessonModalOpen} onOpenChange={closeLessonModal}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-white p-0">
-        {/* Close Button */}
-        {/* <button
-          onClick={closeLessonModal}
-          className="absolute top-4 right-4 z-10 p-2 bg-black/20 hover:bg-black/40 rounded-full text-white transition-colors"
-        >
-          <FiX className="w-5 h-5" />
-        </button> */}
-
+      <DialogContent className="min-w-3xl max-h-[90vh] overflow-hidden bg-white p-0">
         {/* Video Container */}
         <div className="relative bg-black">
           <div className="aspect-video w-full">
@@ -152,7 +144,7 @@ export const LessonModal = () => {
             <iframe
               src={`${currentLesson.videoUrl}?autoplay=${
                 isPlaying ? 1 : 0
-              }&mute=1`}
+              }&mute=0`}
               className="w-full h-full"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

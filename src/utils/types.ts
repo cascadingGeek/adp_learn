@@ -11,6 +11,10 @@ export interface Course {
   duration: string;
   videos: CourseVideo[];
   slug: string;
+  skillLevel: string;
+  skillArea: string;
+  contentType: string;
+  learningStyle: string;
 }
 
 export interface CourseVideo {
@@ -20,6 +24,7 @@ export interface CourseVideo {
   isCompleted: boolean;
   videoUrl: string;
   description: string;
+  transcription: string;
 }
 
 export interface Contact {
@@ -32,12 +37,21 @@ export interface Contact {
   unreadCount?: number;
 }
 
+export interface FileAttachment {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+}
+
 export interface Message {
   id: string;
   senderId: string;
   content: string;
   timestamp: string;
   isOwn: boolean;
+  attachments?: FileAttachment[]; // Add this line
 }
 
 export interface SyllabusData {

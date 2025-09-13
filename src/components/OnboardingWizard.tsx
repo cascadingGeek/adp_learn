@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { TbVectorBezierCircle } from "react-icons/tb";
 import { FaBezierCurve } from "react-icons/fa6";
+import { useStore } from "@/store/useStore";
 
 interface OptionCardProps {
   icon: React.ReactNode;
@@ -104,6 +105,18 @@ export default function OnboardingWizard() {
       root.classList.add(theme);
     }
   }, [theme]);
+
+  const { initializeUserCourses } = useStore();
+
+  useEffect(() => {
+    if (preferences.skillArea) {
+      // Store user preference for later use
+      localStorage.setItem("user-skill-area", preferences.skillArea);
+
+      // Initialize courses based on preference
+      initializeUserCourses(preferences.skillArea);
+    }
+  }, [preferences.skillArea, initializeUserCourses]);
 
   const handleNext = async () => {
     if (currentStep === 6) {

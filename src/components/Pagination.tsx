@@ -8,7 +8,7 @@ interface PaginationProps {
   onItemsPerPageChange: (items: number) => void;
 }
 
-export default function Pagination({
+export function Pagination({
   currentPage,
   totalPages,
   itemsPerPage,
@@ -48,7 +48,7 @@ export default function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-between mt-8">
+    <div className="flex items-center justify-center mt-8 gap-5">
       {/* Items per page selector */}
       <div className="flex items-center gap-2 text-sm text-gray-600">
         <span>Show</span>
