@@ -726,8 +726,7 @@ export const initialConversations: Record<string, Message[]> = {
     {
       id: "1-1",
       senderId: "1",
-      content:
-        "Non in semper nisl adipiscing. What do you think about the latest project requirements?",
+      content: "What do you think about the latest project requirements?",
       timestamp: "9:10 pm",
       isOwn: false,
     },

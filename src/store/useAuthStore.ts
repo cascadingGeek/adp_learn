@@ -63,19 +63,16 @@ export const useAuthStore = create<AuthState>()(
 
       initializeAuth: () => {
         const state = get();
-        // console.log("Initializing auth state:", state);
 
         if (state.token && state.tokenExpiryTime) {
           const now = Date.now();
           if (now >= state.tokenExpiryTime) {
-            // console.log("Token expired during initialization, logging out");
             get().signOut();
-            // Show expiry toast if toast context is available
             if (typeof window !== "undefined") {
               window.dispatchEvent(new CustomEvent("tokenExpired"));
             }
           } else {
-            // Token is still valid, check onboarding status
+            // Only check localStorage for existing authenticated users
             const onboardingCompleted =
               localStorage.getItem("onboarding-completed") === "true";
             set({
@@ -92,7 +89,6 @@ export const useAuthStore = create<AuthState>()(
         const { tokenExpiryTime, signOut } = get();
         if (tokenExpiryTime && Date.now() >= tokenExpiryTime) {
           signOut();
-          // Dispatch custom event for token expiry
           if (typeof window !== "undefined") {
             window.dispatchEvent(new CustomEvent("tokenExpired"));
           }
@@ -114,31 +110,27 @@ export const useAuthStore = create<AuthState>()(
           });
 
           const data = await response.json();
-          // console.log("SignIn API response:", data);
 
           if (!response.ok) {
             throw new Error(data.message || "Sign in failed");
           }
 
-          // Map the new API response structure to user object
+          // FIX: Correct the user object mapping
           const user: User = {
-            id: data.fullName,
-            email: data.fullName,
-            fullName: data.email,
-            firstName: data.email?.split(" ")[0] || "",
-            lastName: data.email?.split(" ").slice(1).join(" ") || "",
+            id: data.email || data.fullName, // Use email as ID, fallback to fullName
+            email: data.email,
+            fullName: data.fullName,
+            firstName: data.fullName?.split(" ")[0] || "",
+            lastName: data.fullName?.split(" ").slice(1).join(" ") || "",
             createdAt: new Date().toISOString(),
             isEmailVerified: true,
           };
 
-          // Calculate expiry time (current time + expiryTimeInSec)
           const expiryTimeInSec = parseInt(data.expiryTimeInSec);
           const tokenExpiryTime = Date.now() + expiryTimeInSec * 1000;
 
-          // Check if user has completed onboarding
-          const onboardingCompleted =
-            localStorage.getItem("onboarding-completed") === "true";
-
+          // FIX: For new sign-ins, always start with onboarding incomplete
+          // The onboarding will only be marked complete after successful API submission
           set({
             user,
             token: data.token,
@@ -146,17 +138,10 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
             error: null,
-            hasCompletedOnboarding: onboardingCompleted,
+            hasCompletedOnboarding: false, // Always false for new sign-ins
             tokenExpiryTime,
           });
 
-          // console.log("Auth state updated:", {
-          //   user,
-          //   isAuthenticated: true,
-          //   tokenExpiryTime: new Date(tokenExpiryTime).toISOString(),
-          // });
-
-          // Set up automatic logout before token expires (5 minutes before)
           const timeUntilExpiry = expiryTimeInSec * 1000;
           const warningTime = Math.max(timeUntilExpiry - 5 * 60 * 1000, 0);
 
@@ -237,23 +222,22 @@ export const useAuthStore = create<AuthState>()(
             throw new Error(data.message || "Google authentication failed");
           }
 
-          // Map response similar to signIn
           const user: User = {
-            id: data.email,
-            email: data.email,
-            fullName: data.fullName,
-            firstName: data.fullName?.split(" ")[0] || "",
-            lastName: data.fullName?.split(" ").slice(1).join(" ") || "",
+            id: data.fullName,
+            email: data.fullName,
+            fullName: data.email,
+            firstName: data.email?.split(" ")[0] || "",
+            lastName: data.email?.split(" ").slice(1).join(" ") || "",
             createdAt: new Date().toISOString(),
             isEmailVerified: true,
           };
 
+          console.log({ user });
+
           const expiryTimeInSec = parseInt(data.expiryTimeInSec);
           const tokenExpiryTime = Date.now() + expiryTimeInSec * 1000;
 
-          const onboardingCompleted =
-            localStorage.getItem("onboarding-completed") === "true";
-
+          // FIX: Same logic - start with incomplete onboarding for Google auth
           set({
             user,
             token: data.token,
@@ -261,7 +245,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
             error: null,
-            hasCompletedOnboarding: onboardingCompleted,
+            hasCompletedOnboarding: false, // Always false for new authentications
             tokenExpiryTime,
           });
 
@@ -288,6 +272,8 @@ export const useAuthStore = create<AuthState>()(
       },
 
       signOut: () => {
+        // FIX: Clear onboarding status on sign out
+        // localStorage.removeItem("onboarding-completed");
         set({
           user: null,
           token: null,
@@ -323,11 +309,10 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
         tokenExpiryTime: state.tokenExpiryTime,
+        // FIX: Don't persist onboarding status - let it be determined by localStorage
       }),
       onRehydrateStorage: () => (state) => {
-        // console.log("Rehydrating auth state:", state);
         if (state) {
-          // Initialize auth state after rehydration
           setTimeout(() => state.initializeAuth(), 0);
         }
       },

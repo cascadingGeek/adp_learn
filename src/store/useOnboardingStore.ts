@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useAuthStore } from "./useAuthStore"; // Import auth store
 
 export interface UserPreferences {
   studentId: string;
@@ -67,7 +68,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       updatePreferences: (updates) =>
         set((state) => ({
           preferences: { ...state.preferences, ...updates },
-          error: null, // Clear error when user makes changes
+          error: null,
         })),
 
       setTheme: (theme) => set({ theme }),
@@ -87,8 +88,6 @@ export const useOnboardingStore = create<OnboardingState>()(
       submitPreferences: async () => {
         const { preferences } = get();
 
-        // console.log("Submitting preferences:", preferences);
-
         // Validate required fields
         if (
           !preferences.skillLevel ||
@@ -105,13 +104,10 @@ export const useOnboardingStore = create<OnboardingState>()(
         set({ isSubmitting: true, error: null });
 
         try {
-          // Convert peerReview boolean to match API expectations
           const payload = {
             ...preferences,
             peerReview: preferences.peerReview === true,
           };
-
-          // console.log("API payload:", payload);
 
           const NEXT_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
           const response = await fetch(
@@ -125,20 +121,15 @@ export const useOnboardingStore = create<OnboardingState>()(
             }
           );
 
-          // console.log("API response status:", response.status);
-
-          // Parse response
           let responseData;
           try {
             responseData = await response.json();
-            // console.log("API response data:", responseData);
           } catch (parseError) {
             console.error("Failed to parse response:", parseError);
             throw new Error("Invalid response from server");
           }
 
           if (!response.ok) {
-            // Handle different error scenarios
             const errorMessage =
               responseData?.message ||
               responseData?.error ||
@@ -149,8 +140,10 @@ export const useOnboardingStore = create<OnboardingState>()(
             return { success: false, message: errorMessage };
           }
 
-          // Success - preferences saved
-          // console.log("Preferences saved successfully");
+          // FIX: Only mark onboarding complete after successful API submission
+          const authStore = useAuthStore.getState();
+          authStore.setOnboardingComplete();
+
           set({ isSubmitting: false, error: null });
 
           return {

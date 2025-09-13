@@ -220,7 +220,7 @@ export const AudioModal: React.FC<AudioModalProps> = ({
                 onClick={handleStop}
                 variant="outline"
                 size="sm"
-                className="px-4 py-2"
+                className="px-4 py-2 text-black"
               >
                 Stop
               </Button>

@@ -32,10 +32,13 @@ const SignInPage = () => {
     checkOnboardingStatus,
   } = useAuthStore();
 
-  // Redirect if already authenticated
+  // FIX: Updated redirect logic
   useEffect(() => {
     if (isAuthenticated && user) {
       const hasCompletedOnboarding = checkOnboardingStatus();
+
+      // Always redirect new users to dashboard for onboarding
+      // Only redirect to courses if onboarding is actually completed
       if (hasCompletedOnboarding) {
         router.push("/courses");
       } else {
@@ -44,7 +47,6 @@ const SignInPage = () => {
     }
   }, [isAuthenticated, user, router, checkOnboardingStatus]);
 
-  // Clear error when component mounts or view changes
   useEffect(() => {
     clearError();
   }, [currentView, clearError]);
@@ -61,9 +63,9 @@ const SignInPage = () => {
     if (result.success) {
       toast.success(result.message!, { duration: 1500 });
 
-      // Check onboarding status and redirect accordingly
-      const hasCompletedOnboarding = checkOnboardingStatus();
+      // FIX: Simplified redirect logic - let useEffect handle routing
       setTimeout(() => {
+        const hasCompletedOnboarding = checkOnboardingStatus();
         if (hasCompletedOnboarding) {
           router.push("/courses");
         } else {
@@ -81,9 +83,9 @@ const SignInPage = () => {
     if (result.success) {
       toast.success(result.message!, { duration: 1500 });
 
-      // Check onboarding status and redirect accordingly
-      const hasCompletedOnboarding = checkOnboardingStatus();
+      // FIX: Same simplified logic for Google auth
       setTimeout(() => {
+        const hasCompletedOnboarding = checkOnboardingStatus();
         if (hasCompletedOnboarding) {
           router.push("/courses");
         } else {
@@ -99,7 +101,6 @@ const SignInPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when user starts typing
     if (error) {
       clearError();
     }
@@ -116,7 +117,6 @@ const SignInPage = () => {
         ></div>
       </div>
 
-      {/* Right side - CTA */}
       <div className="flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md space-y-6">
           <div className="space-y-2">
@@ -130,7 +130,6 @@ const SignInPage = () => {
             </p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
               <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
@@ -183,7 +182,6 @@ const SignInPage = () => {
 
   const renderFormView = () => (
     <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left side - Image with Overlay */}
       <div
         className="hidden lg:flex flex-col justify-end p-10"
         style={{
@@ -200,7 +198,6 @@ const SignInPage = () => {
         </div>
       </div>
 
-      {/* Right side - Form */}
       <div className="flex items-center justify-center p-10 bg-white">
         <div className="w-full max-w-md space-y-6">
           <div className="space-y-2">
@@ -209,7 +206,6 @@ const SignInPage = () => {
             </h1>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
               <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />

@@ -47,7 +47,7 @@ export default function DashboardPage() {
         reset();
 
         // Set up student ID for onboarding
-        updatePreferences({ studentId: user.email });
+        updatePreferences({ studentId: user.fullName });
 
         // Show onboarding
         setShowOnboarding(true);
@@ -93,6 +93,8 @@ export default function DashboardPage() {
   if (!isAuthenticated || !user) {
     return null;
   }
+
+  // console.log({ user });
 
   return (
     <div className="min-h-screen">
